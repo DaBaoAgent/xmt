@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# 运行产物
+logs/
+out/
+*.log
+
+# 采集数据（SQLite，本地生成，不入库）
+data/
+
+# 凭证 —— 永不入库
+小红书cookie.txt
+config/xhs_cookie.txt
+*.cookie
+.env
+*_token.json
+
+# OS
+Thumbs.db
+desktop.ini

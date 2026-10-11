@@ -1,0 +1,119 @@
+{
+  "_comment": "佳康顺新媒体账号矩阵。抖音前端免登录采集：必须填主页分享链接 url（抖音号无法反查主页）。启用与否由 url 是否为空决定。",
+  "accounts": [
+    {
+      "id": "fyj_rent_dy",
+      "owner": "冯雨俊",
+      "name": "昆山佳康顺工厂店",
+      "platform": "douyin",
+      "role": "租赁号实拍",
+      "blue_v": "昆山市张浦镇佳康顺电动车商行",
+      "url": "https://v.douyin.com/TD-j4u-ZwLw/"
+    },
+    {
+      "id": "fyj_personal_dy",
+      "owner": "冯雨俊",
+      "name": "佳康顺工厂直销",
+      "platform": "douyin",
+      "role": "个人号",
+      "url": "https://v.douyin.com/AyX0m16UXuc/"
+    },
+    {
+      "id": "sxy_brand_dy",
+      "owner": "单心悦",
+      "name": "佳康顺昆山医疗器械专卖店",
+      "platform": "douyin",
+      "role": "品牌号实拍",
+      "blue_v": "昆山佳康顺医疗器械有限公司",
+      "url": "https://v.douyin.com/uY2Hdc0PDvM/"
+    },
+    {
+      "id": "sxy_personal_dy",
+      "owner": "单心悦",
+      "name": "佳康顺-代步车",
+      "platform": "douyin",
+      "role": "个人号",
+      "url": "https://v.douyin.com/uif1p0ffZo0/"
+    },
+
+    {
+      "id": "fyj_rent_xhs",
+      "owner": "冯雨俊",
+      "name": "昆山工厂轮椅直租",
+      "platform": "xiaohongshu",
+      "role": "租赁号",
+      "xhs_id": "95480619590",
+      "url": "",
+      "enabled": true
+    },
+    {
+      "id": "fyj_personal_xhs",
+      "owner": "冯雨俊",
+      "name": "佳康顺工厂直租",
+      "platform": "xiaohongshu",
+      "role": "个人号",
+      "xhs_id": "42059570041",
+      "url": "",
+      "enabled": true
+    },
+    {
+      "id": "sxy_brand_xhs",
+      "owner": "单心悦",
+      "name": "佳康顺医疗器械",
+      "platform": "xiaohongshu",
+      "role": "品牌号",
+      "blue_v": "昆山佳康顺医疗器械有限公司",
+      "xhs_id": "49313135003",
+      "url": "",
+      "enabled": true
+    },
+    {
+      "id": "sxy_personal_xhs",
+      "owner": "单心悦",
+      "name": "芒果椰椰",
+      "platform": "xiaohongshu",
+      "role": "个人号",
+      "xhs_id": "272375615",
+      "url": "",
+      "enabled": true
+    },
+
+    {
+      "id": "fyj_rent_sph",
+      "owner": "冯雨俊",
+      "name": "星星y1Y",
+      "platform": "channels",
+      "role": "租赁号",
+      "sph_id": "sphmWHDEeHKfkcV",
+      "enabled": false,
+      "note": "视频号无网页前台，免费免登录不可行"
+    },
+    {
+      "id": "fyj_personal_sph",
+      "owner": "冯雨俊",
+      "name": "佳康顺工厂直销",
+      "platform": "channels",
+      "role": "个人号",
+      "sph_id": "sphKA5fJLcFL0VB",
+      "enabled": false
+    },
+    {
+      "id": "sxy_brand_sph",
+      "owner": "单心悦",
+      "name": "佳康顺老年用品工厂",
+      "platform": "channels",
+      "role": "品牌号",
+      "sph_id": "sphm7mdUXT46OIq",
+      "enabled": false
+    },
+    {
+      "id": "sxy_personal_sph",
+      "owner": "单心悦",
+      "name": "佳康顺代步车-芒果椰椰",
+      "platform": "channels",
+      "role": "个人号",
+      "sph_id": "sphdElmX8ldUPeo",
+      "enabled": false
+    }
+  ]
+}
