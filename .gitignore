@@ -11,6 +11,7 @@ out/
 # 客户业务数据（不入公开仓库）
 销售报表/
 *.xlsx
+config/sales_notes.json
 
 # 采集数据（SQLite，本地生成，不入库）
 data/

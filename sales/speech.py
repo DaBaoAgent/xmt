@@ -34,6 +34,32 @@ def _strip_big():
     return 5500.0
 
 
+NOTES_JSON = os.path.join(HERE, "config", "sales_notes.json")
+
+
+def load_notes(month):
+    """读取 config/sales_notes.json 里该月的汇报口径（外部归因 + 已采取措施）。
+
+    写成配置文件而不是硬编码：每月的外部原因不同，运营自己改 json 即可，
+    不需要动代码。返回 {'attribution': str|None, 'actions': [str], 'channel': str|None}。
+    """
+    import json
+    empty = {"attribution": None, "actions": [], "channel": None}
+    if not os.path.exists(NOTES_JSON):
+        return empty
+    try:
+        with open(NOTES_JSON, encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return empty
+    node = data.get(str(month)) or {}
+    return {
+        "attribution": node.get("attribution"),
+        "channel": node.get("channel"),
+        "actions": node.get("actions") or [],
+    }
+
+
 def build(month=None, records=None, path=None, use_llm=False, export_docx=False):
     records = records if records is not None else parse.load()[0]
     months = sorted({r["month"] for r in records if r["month"] and r["amount"] > 0})
@@ -43,6 +69,7 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
     cur = analyze.month_metrics(records, month)
     comp = analyze.mom(records, month)
     prev = comp["prev"] if comp["prev_available"] else None
+    notes = load_notes(month)
 
     big = _strip_big()
     prev_ex_big = round(prev["total"] - big, 2) if prev else None
@@ -144,6 +171,18 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
     A("## 五、需要正视的问题")
     A("")
     issues = []
+    if notes.get("attribution"):
+        proof = ""
+        ch = notes.get("channel")
+        if ch and prev:
+            for row in comp["channel_gain"]:
+                if ch in (row["channel"] or ""):
+                    d = round(row["cur_amount"] - row["prev_amount"], 2)
+                    proof = (f"（该渠道 {_fmt(row['prev_amount'])} 元 → {_fmt(row['cur_amount'])} 元，"
+                             f"{'+' if d >= 0 else ''}{_fmt(d)} 元）")
+                    break
+        issues.append(f"**外部平台收紧（主因）**：{notes['attribution']}{proof}。"
+                      f"这一项不受我们内部投放力度控制。")
     if prev and comp["pct"] is not None and comp["pct"] < 0:
         issues.append(f"营收环比下降 {abs(comp['pct'])}%（{_fmt(prev['total'])} → {_fmt(cur['total'])} 元）。"
                       f"其中 {_fmt(big)} 元的大单消失影响明显，剔除后仍下降 {abs(pct_ex_big)}%。")
@@ -155,7 +194,7 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
     if cur["channels"]:
         top = cur["channels"][0]
         if top["share_amount"] and top["share_amount"] >= 60:
-            issues.append(f"渠道过度集中：{top['name']} 占 {top['share_amount']}%，"
+            issues.append(f"渠道过度集中：{top['name']}占 {top['share_amount']}%，"
                           f"单一平台规则变化会直接冲击营收。")
     if cur["avg_rent"] and cur["avg_order"] and cur["avg_rent"] < cur["avg_order"] * 0.35:
         issues.append(f"租赁单价偏低（均价 {_fmt(cur['avg_rent'])} 元），"
@@ -170,6 +209,8 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
     A("## 六、下一步动作建议")
     A("")
     steps = []
+    for a in notes.get("actions") or []:
+        steps.append(f"**已在做** — {a}")
     if dead:
         names = "、".join(dead)
         steps.append(f"重启断档渠道：{names}上月合计贡献 "
@@ -186,7 +227,7 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
     # 七、逐字稿
     A("## 七、口头汇报逐字稿（可直接念）")
     A("")
-    spoken_text = _spoken(cur, prev, comp, pct_ex_big, big, dead)
+    spoken_text = _spoken(cur, prev, comp, pct_ex_big, big, dead, notes)
     A(spoken_text)
     A("")
 
@@ -217,7 +258,7 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
     if export_docx:
         try:
             from . import docx_export
-            dpath = docx_export.build(cur, prev, comp, pct_ex_big, big, dead, spoken_text)
+            dpath = docx_export.build(cur, prev, comp, pct_ex_big, big, dead, spoken_text, notes=notes)
             print(f"[speech] Word 版：{dpath}")
         except Exception as e:
             print(f"[speech] docx 导出失败：{type(e).__name__}: {e}")
@@ -225,8 +266,9 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
     return out, cur
 
 
-def _spoken(cur, prev, comp, pct_ex_big, big, dead):
+def _spoken(cur, prev, comp, pct_ex_big, big, dead, notes=None):
     """口语逐字稿：短句、有数字、有结论，适合当面汇报念。"""
+    notes = notes or {}
     t = []
     t.append(f"董事长，我汇报一下 {cur['month']} 月新媒体这边的销售和租赁情况。")
     t.append("")
@@ -253,13 +295,34 @@ def _spoken(cur, prev, comp, pct_ex_big, big, dead):
     if dead:
         t.append(f"要提一句问题：{('、'.join(dead))}这几个渠道这个月基本没出单，"
                  f"上个月它们还能贡献不少，这块流量我们丢了。")
+    if notes.get("attribution"):
+        t.append("")
+        t.append(f"这里还有一个外部原因要说明：{notes['attribution']}。这不是我们内部努力能左右的。")
+        ch = notes.get("channel")
+        if ch and prev:
+            for row in comp["channel_gain"]:
+                if ch in (row["channel"] or ""):
+                    t.append(f"落到数字上，{ch}这个渠道从 {_fmt(row['prev_amount'])} 元掉到 "
+                             f"{_fmt(row['cur_amount'])} 元。")
+                    break
+        acts = notes.get("actions") or []
+        if acts:
+            ordinal = ["第一", "第二", "第三", "第四"]
+            parts = [f"{ordinal[i] if i < len(ordinal) else '第%d' % (i + 1)}，{a}"
+                     for i, a in enumerate(acts)]
+            t.append("所以我们已经做了几件事：" + "；".join(parts) + "。")
+            t.append("目的就是把流量从对单一平台的依赖，转到我们自己能把控的入口上。")
     t.append(f"押金方面请放心，累计 {_fmt(cur['deposit_total'])} 元，全部按期归还，没有一笔纠纷。")
     t.append("")
-    t.append("接下来我们要做三件事：第一，把断档的渠道重新上架，用现成的成片做测试投放；"
+    t.append("在这个基础上，接下来我们还要做三件事：第一，把断档的渠道重新上架，用现成的成片做测试投放；"
              "第二，把小红书这个月跑通的做法，原样改写到抖音和私域；"
              "第三，租赁做套餐化，设最低起租门槛，把客单价抬起来。")
     t.append("")
-    t.append("我的判断是：产品没问题，卡在流量渠道太单一，把渠道铺开，下个月数据能回来。汇报完毕。")
+    if notes.get("attribution"):
+        t.append("我的判断是：产品本身没有问题，这个月的下滑主要是外部平台收紧带来的，"
+                 "我们已经在新媒体和地图两头把流量补起来，下个月数据能回来。汇报完毕。")
+    else:
+        t.append("我的判断是：产品没问题，卡在流量渠道太单一，把渠道铺开，下个月数据能回来。汇报完毕。")
     return "\n".join(t)
 
 

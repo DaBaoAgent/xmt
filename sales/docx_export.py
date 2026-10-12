@@ -75,8 +75,9 @@ def _para(doc, text, bold=False, italic=False, size=10.5):
     return p
 
 
-def build(cur, prev, comp, pct_ex_big=None, big=5500.0, dead=None, spoken="", path=None):
+def build(cur, prev, comp, pct_ex_big=None, big=5500.0, dead=None, spoken="", path=None, notes=None):
     dead = dead or []
+    notes = notes or {}
     doc = Document()
     _zh(doc)
 
@@ -143,6 +144,18 @@ def build(cur, prev, comp, pct_ex_big=None, big=5500.0, dead=None, spoken="", pa
                                                 for u in cur["unit_customers"]))
 
     _h(doc, "五、问题与下一步", 1)
+    if notes.get("attribution"):
+        proof = ""
+        ch = notes.get("channel")
+        if ch and prev:
+            for row in comp["channel_gain"]:
+                if ch in (row["channel"] or ""):
+                    d = round(row["cur_amount"] - row["prev_amount"], 2)
+                    proof = (f"（该渠道 {_fmt(row['prev_amount'])} 元 → {_fmt(row['cur_amount'])} 元，"
+                             f"{'+' if d >= 0 else ''}{_fmt(d)} 元）")
+                    break
+        _para(doc, f"· 外部平台收紧（主因）：{notes['attribution']}{proof}。"
+                   f"不受内部投放力度控制。", bold=True)
     if prev and comp.get("pct") is not None and comp["pct"] < 0:
         _para(doc, f"· 营收环比 {comp['pct']}%（{_fmt(prev['total'])} → {_fmt(cur['total'])} 元）；"
                    f"剔除上月 {_fmt(big)} 元大单后仍为 {pct_ex_big}%。")
@@ -150,6 +163,9 @@ def build(cur, prev, comp, pct_ex_big=None, big=5500.0, dead=None, spoken="", pa
         _para(doc, f"· 渠道断档：{'、'.join(dead)} 本月归零。")
     if cur["channels"] and cur["channels"][0]["share_amount"] >= 60:
         _para(doc, f"· 渠道过度集中：{cur['channels'][0]['name']} 占 {cur['channels'][0]['share_amount']}%。")
+    _para(doc, "已在做的应对：", bold=True)
+    for a in (notes.get("actions") or ["—"]):
+        _para(doc, f"· {a}")
     _para(doc, "下一步：", bold=True)
     for i, s in enumerate([
         (f"重启断档渠道（{'、'.join(dead)}），老客转介绍返券 + 视频号成片重剪再发。" if dead
