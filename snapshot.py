@@ -141,7 +141,13 @@ def main():
             recs, spath = sp.load()
         except FileNotFoundError:
             return "无销售报表文件，跳过"
-        out, cur = speech.build(records=recs, export_docx=True)
+        # 当月数据未完结时出「上一个完整月」的材料，避免每天生成一份不完整的当月汇报
+        import datetime as _dt
+        months = sorted({r["month"] for r in recs if r.get("month")})
+        m = months[-1] if months else None
+        if m == _dt.datetime.now().month and len(months) > 1:
+            m = months[-2]
+        out, cur = speech.build(month=m, records=recs, export_docx=True)
         return (f"{cur['label']} {cur['count']} 单 {cur['total']} 元 → "
                 f"{os.path.basename(out)}")
     _step("销售汇报材料", sales_step, results)
