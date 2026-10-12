@@ -102,6 +102,17 @@ def main():
         return rep.build_weekly_report(days=7)
     _step("周报生成", weekly, results)
 
+    def discover():
+        try:
+            from analytics import discover as D
+        except ImportError as e:
+            return f"discover 未就绪（{e}）"
+        cands = D.discover(top=10, days=30)
+        gap = D.content_gap(days=30)
+        return (f"对标候选 {len(cands)} 个；题材差距：外部样本 {gap['rival_count']} / "
+                f"自有样本 {gap['own_count']}")
+    _step("对标候选与题材差距", discover, results)
+
     # 6. 洞察层
     if not args.quick and not args.no_insight:
         def topics():
@@ -119,13 +130,7 @@ def main():
         results["选题池"] = "skipped"
         results["拍摄方向"] = "skipped"
 
-    # 7. 看板
-    def dash():
-        import dashboard
-        return dashboard.build()
-    _step("看板生成", dash, results)
-
-    # 8. 销售/租赁报表 → 董事长汇报材料
+    # 7. 销售/租赁报表 → 董事长汇报材料（放在看板前，看板才能展示销售数据）
     def sales_step():
         try:
             from sales import parse as sp
@@ -140,6 +145,12 @@ def main():
         return (f"{cur['label']} {cur['count']} 单 {cur['total']} 元 → "
                 f"{os.path.basename(out)}")
     _step("销售汇报材料", sales_step, results)
+
+    # 8. 看板（最后生成，包含以上所有数据）
+    def dash():
+        import dashboard
+        return dashboard.build()
+    _step("看板生成", dash, results)
 
     print("=" * 60)
     print("快照完成，用时 %.1fs" % (time.time() - t0))

@@ -135,6 +135,81 @@ def platform_section(cfg, latest, by_acct, works_by, platform, kind="own"):
             f'<div class="grid">{"".join(cards)}</div></section>')
 
 
+def sales_section():
+    """销售与租赁（数据源：销售报表/*.xlsx，客户信息仅在本机看板展示，不入公开仓库）。"""
+    try:
+        from sales import parse as sp
+        from sales import analyze as sa
+    except Exception:
+        return ""
+    try:
+        recs, _ = sp.load()
+    except FileNotFoundError:
+        return ('<section><h2>销售与租赁 <span class="badge off">未接入</span></h2>'
+                '<p class="reason">把 WPS 导出的《新媒体销售报表》xlsx 放进 销售报表/ 目录后自动出现</p></section>')
+    months = sorted({r["month"] for r in recs if r.get("month")})
+    if not months:
+        return ""
+    import datetime as _dt
+    now_m = _dt.datetime.now().month
+    m = months[-1]
+    wip = None
+    if m == now_m and len(months) > 1:
+        # 当月还在进行中，主展示上一个完整月，当月数据另附一行（避免「环比 -84%」这类误导）
+        wip = sa.month_metrics(recs, m)
+        m = months[-2]
+    cur = sa.month_metrics(recs, m)
+    comp = sa.mom(recs, m)
+    prev = comp.get("prev") if comp.get("prev_available") else None
+    pct = comp.get("pct") if prev else None
+    if pct is None:
+        pct_html = '<span class="muted">—</span>'
+    else:
+        col = "#22c55e" if pct >= 0 else "#ef4444"
+        pct_html = f'<span style="color:{col}">{"+" if pct >= 0 else ""}{pct}%</span>'
+
+    kpi = (f'<div class="top">'
+           f'<div><div class="k">{cur["label"]}营收</div><div class="v">{sa.fmt(cur["total"])} 元</div></div>'
+           f'<div><div class="k">订单</div><div class="v">{cur["count"]} 单</div></div>'
+           f'<div><div class="k">售卖 / 租赁</div><div class="v">'
+           f'{cur["sale_count"]} / {cur["rent_count"]} 单</div></div>'
+           f'<div><div class="k">客单价</div><div class="v">{sa.fmt(cur["avg_order"])} 元</div></div>'
+           f'<div><div class="k">押金池</div><div class="v">{sa.fmt(cur["deposit_total"])} 元</div></div>'
+           f'<div><div class="k">环比上月</div><div class="v">{pct_html}</div></div>'
+           f'</div>')
+
+    trs = "".join(
+        f'<tr><td class="t">{esc(c["name"])}</td><td class="num">{c["count"]}</td>'
+        f'<td class="num">{sa.fmt(c["amount"])}</td>'
+        f'<td class="num">{c["share_amount"]}%</td></tr>'
+        for c in cur["channels"][:8])
+    ch_table = ('<table><thead><tr><th>渠道</th><th class="num">订单</th>'
+                '<th class="num">金额(元)</th><th class="num">占比</th></tr></thead>'
+                f'<tbody>{trs}</tbody></table>')
+
+    notes = []
+    if prev and pct is not None and pct < 0:
+        notes.append(f'营收环比 {pct}%（{sa.fmt(prev["total"])} → {sa.fmt(cur["total"])} 元）')
+    dead = [f'{c.get("channel")}（上月 {sa.fmt(c.get("prev_amount"))} 元）'
+            for c in comp.get("channel_gain", [])
+            if (c.get("prev_amount") or 0) >= 500
+            and (c.get("cur_amount") or 0) < (c.get("prev_amount") or 0) * 0.1]
+    if dead:
+        notes.append("断档渠道：" + "、".join(dead[:4]))
+    mo = cur.get("max_order")
+    if mo:
+        notes.append(f'最大单：{esc(mo["product"] or "")} {sa.fmt(mo["amount"])} 元'
+                     f'（{esc(mo["channel"] or "")} {esc(mo["date"] or "")}）')
+    note_html = "".join(f'<p class="reason">{n}</p>' for n in notes)
+    if wip:
+        note_html += (f'<p class="reason muted">本月（{wip["label"]}）进行中，数据未完结：'
+                      f'{wip["count"]} 单 / {sa.fmt(wip["total"])} 元</p>')
+
+    badge = f'{cur["label"]}（完整月）' + (f' · {wip["label"]} 进行中' if wip else "")
+    return (f'<section><h2>销售与租赁 <span class="badge">{badge}</span></h2>'
+            f'{kpi}{ch_table}{note_html}</section>')
+
+
 def hits_section(hits):
     if not hits:
         return ('<section><h2>今日爆款榜 <span class="badge off">暂无数据</span></h2>'
@@ -249,6 +324,7 @@ def build():
     rf = sum(latest[i]["followers"] or 0 for i in rival_ids if i in latest)
 
     sections = []
+    sections.append(sales_section())
     sections.append('<section><h2>自有账号矩阵 <span class="badge">'
                     f'{len([i for i in own_ids if i in latest])} / {len(own_ids)} 已接入</span></h2></section>')
     for p in PLATFORM_ORDER:

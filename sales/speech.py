@@ -34,6 +34,18 @@ def _strip_big():
     return 5500.0
 
 
+# 断档渠道的重启做法（写进汇报的「下一步」，按渠道给具体动作而不是泛泛而谈）
+REVIVE = {
+    "介绍": "走老客户转介绍机制（老客户返券、带新有折扣）",
+    "视频号": "把现有成片重新剪辑发布，恢复更新节奏",
+    "美团": "重上美团店铺套餐与团购活动（上月主力渠道，本月近乎停摆，优先恢复）",
+    "小红书": "恢复日更节奏，重做搜索关键词布局",
+    "闲鱼": "调整标题与主图规格，规避类目收紧",
+    "抖音": "用现成素材做测试投放，跑出数据再放量",
+    "零售": "维持到店转化，做好客户留资",
+}
+
+
 NOTES_JSON = os.path.join(HERE, "config", "sales_notes.json")
 
 
@@ -188,9 +200,14 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
                       f"其中 {_fmt(big)} 元的大单消失影响明显，剔除后仍下降 {abs(pct_ex_big)}%。")
     pm = {c["name"]: c for c in (prev["channels"] if prev else [])}
     cm = {c["name"]: c for c in cur["channels"]}
-    dead = [n for n in pm if n not in cm and pm[n]["amount"] >= 500]
+    # 断档 = 上月 ≥500 元、本月跌到不足 10%。只判「完全归零」会漏掉美团这类近乎停摆的主力渠道
+    dead = [n for n in pm
+            if pm[n]["amount"] >= 500
+            and (cm.get(n, {}).get("amount") or 0) < pm[n]["amount"] * 0.1]
     if dead:
-        issues.append("渠道断档：" + "、".join(f"{n}（上月 {_fmt(pm[n]['amount'])} 元，本月 0）" for n in dead) + "。")
+        issues.append("渠道断档：" + "、".join(
+            f"{n}（上月 {_fmt(pm[n]['amount'])} 元 → 本月 "
+            f"{_fmt((cm.get(n) or {}).get('amount') or 0)} 元）" for n in dead) + "。")
     if cur["channels"]:
         top = cur["channels"][0]
         if top["share_amount"] and top["share_amount"] >= 60:
@@ -213,14 +230,13 @@ def build(month=None, records=None, path=None, use_llm=False, export_docx=False)
         steps.append(f"**已在做** — {a}")
     if dead:
         names = "、".join(dead)
-        steps.append(f"重启断档渠道：{names}上月合计贡献 "
-                     f"{_fmt(sum(pm[n]['amount'] for n in dead))} 元、本月归零；"
-                     f"其中「介绍」走老客户转介绍机制（给老客户返券），"
-                     f"「视频号」把现有成片重新剪更发起来。")
+        steps.append(f"重启断档渠道：{names} 上月合计贡献 "
+                     f"{_fmt(sum(pm[n]['amount'] for n in dead))} 元、本月近乎归零 —— "
+                     + "；".join(f"「{n}」{REVIVE.get(n, '恢复投放节奏')}" for n in dead) + "。")
     steps.append("复制胜出模式：本月小红书贡献最高，把小红书跑通的选题与话术，同款改写后投到抖音与企业微信私域。")
     steps.append("提高租赁单值：设计 7 天 / 15 天 / 月租三档套餐，设最低起租金额，避免再出现 13.5 元级碎片订单。")
     steps.append("承接大单线索：把上月 5500 元级客户（企业 / 单位）单独建档，节前做一轮定向回访。")
-    for i, t in enumerate(steps[:4], 1):
+    for i, t in enumerate(steps, 1):
         A(f"{i}. {t}")
     A("")
 

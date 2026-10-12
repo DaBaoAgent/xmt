@@ -12,6 +12,7 @@
 | `collectors/hot.py` | 平台热搜：抖音热榜、微博热搜、百度热搜 | `python -m collectors.hot` |
 | `collectors/rival.py` | **找对标**：监控关键词搜索（抖音/小红书）+ 对标账号主页采集 | `python -m collectors.rival --search` |
 | `analytics/` | **分析**：增长归因、爆款结构与时段、自有 vs 对标差距 | `python -m analytics.growth` |
+| `analytics/discover.py` | **找对标**：从关键词搜索命中反推值得盯的对标号，可写入 `config/rivals.json` | `python -m analytics.discover --top 10 [--write]` |
 | `insight/` | **出活**：选题池、小红书笔记/抖音口播文案、下一步拍摄方向 | `python -m insight.topics` |
 | `sales/` | **销售与租赁报表**：解析 xlsx、月度指标、董事长汇报材料（md + Word） | `python -m sales.speech --month 9 --docx` |
 | `dashboard.py` | 矩阵看板（自有 + 对标 + 爆款榜 + 热搜 + 结论） | `python dashboard.py` |
