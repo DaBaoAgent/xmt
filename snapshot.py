@@ -130,29 +130,7 @@ def main():
         results["选题池"] = "skipped"
         results["拍摄方向"] = "skipped"
 
-    # 7. 销售/租赁报表 → 董事长汇报材料（放在看板前，看板才能展示销售数据）
-    def sales_step():
-        try:
-            from sales import parse as sp
-            from sales import speech
-        except ImportError as e:
-            return f"sales 未就绪（{e}）"
-        try:
-            recs, spath = sp.load()
-        except FileNotFoundError:
-            return "无销售报表文件，跳过"
-        # 当月数据未完结时出「上一个完整月」的材料，避免每天生成一份不完整的当月汇报
-        import datetime as _dt
-        months = sorted({r["month"] for r in recs if r.get("month")})
-        m = months[-1] if months else None
-        if m == _dt.datetime.now().month and len(months) > 1:
-            m = months[-2]
-        out, cur = speech.build(month=m, records=recs, export_docx=True)
-        return (f"{cur['label']} {cur['count']} 单 {cur['total']} 元 → "
-                f"{os.path.basename(out)}")
-    _step("销售汇报材料", sales_step, results)
-
-    # 8. 看板（最后生成，包含以上所有数据）
+    # 7. 看板（最后生成，包含以上所有数据；销售区由 dashboard 直接读 xlsx，只读不写）
     def dash():
         import dashboard
         return dashboard.build()
@@ -160,6 +138,8 @@ def main():
 
     print("=" * 60)
     print("快照完成，用时 %.1fs" % (time.time() - t0))
+    print("提示：董事长汇报材料不随每日流程生成 —— 按需手动触发：")
+    print("      .venv/Scripts/python.exe -m sales.speech --month 9 --docx")
     for k, v in results.items():
         print(f"  {k}: {v}")
 

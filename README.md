@@ -15,6 +15,7 @@
 | `collect_douyin.py` / `collect_xhs.py` | 自有 12 个账号的粉丝/作品采集（抖音免登录、小红书带 cookie） | `python -m collect_douyin` |
 | `collectors/hot.py` | 平台热搜：抖音热榜、微博热搜、百度热搜 | `python -m collectors.hot` |
 | `collectors/rival.py` | **找对标**：监控关键词搜索（抖音/小红书）+ 对标账号主页采集 | `python -m collectors.rival --search` |
+| `import_rivals.py` | **导入对标**：把 `对标账号.txt` 里的手写清单解析进 `config/rivals.json` | `python import_rivals.py [--dry-run]` |
 | `analytics/` | **分析**：增长归因、爆款结构与时段、自有 vs 对标差距 | `python -m analytics.growth` |
 | `analytics/discover.py` | **找对标**：从关键词搜索命中反推值得盯的对标号，可写入 `config/rivals.json` | `python -m analytics.discover --top 10 [--write]` |
 | `insight/` | **出活**：选题池、小红书笔记/抖音口播文案、下一步拍摄方向 | `python -m insight.topics` |
@@ -90,7 +91,7 @@ uv pip install --python .venv/Scripts/python.exe playwright requests python-docx
 ## 配置
 
 - `config/accounts.json` —— 自有账号矩阵；抖音填主页分享链接 `url`，小红书填 `xhs_id`。
-- `config/rivals.json` —— 对标账号 + 监控关键词。
+- `config/rivals.json` —— 对标账号 + 监控关键词。**日常维护只需编辑根目录 `对标账号.txt`**（一行一个号，写名字 + 主页链接 / 小红书号即可），然后 `python import_rivals.py` 导入；也可用 `python -m analytics.discover --write` 从搜索命中的高表现号里自动补充。
 - `config/douyin_cookie.txt`（不入库）—— 抖音**搜索页**需登录态，否则跳验证码中间页。
 - `小红书cookie.txt` / `config/xhs_cookie.txt`（不入库）—— 小红书登录态。
 - `config/llm.local.json`（不入库）—— insight 层 LLM 配置，格式：
@@ -106,6 +107,12 @@ install_cron.cmd
 ```
 
 注册 Windows 计划任务，每天 05:00 调用 `run.cmd`（内部执行 `snapshot.py`，日志追加到 `logs/run.log`）。全流程约 10–25 分钟。
+
+> **董事长汇报材料不参与每日流程** —— 一个月一次、按需手动触发：
+> ```bash
+> .venv/Scripts/python.exe -m sales.speech --month 9 --docx
+> ```
+> `--month` 省略时自动取「最近一个完整月」。看板上的销售区是直接读 `销售报表/*.xlsx` 的只读展示，不受影响。
 
 ## 安全与合规
 

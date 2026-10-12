@@ -12,6 +12,7 @@
 """
 import os
 import json
+import hashlib
 import argparse
 from collections import defaultdict
 from datetime import datetime
@@ -87,7 +88,8 @@ def discover(platform=None, top=10, days=30, min_hits=1):
 def to_rival_entry(cand, idx=None):
     """候选 → rivals.json 条目骨架。缺 url / xhs_id 时留空并写明待补。"""
     plat = cand["platform"]
-    pid = f"rival_{plat[:3]}_{abs(hash(cand['name'])) % 10000:04d}"
+    # md5 而非内置 hash()：hash() 每进程带随机种子，导致 id 每次都变
+    pid = f"rival_{plat[:3]}_{hashlib.md5(cand['name'].encode('utf-8')).hexdigest()[:5]}"
     entry = {
         "id": pid,
         "owner": "待补",
