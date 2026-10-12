@@ -1,0 +1,27 @@
+{
+  "_comment": "对标账号 + 监控关键词。抖音填主页分享链接 url；小红书填 xhs_id（小红书号）。kind=rival，与自有账号同库同表，看板按 kind 分区展示。",
+  "rivals": [
+    {
+      "id": "rival_dy_example",
+      "owner": "待补充",
+      "name": "示例对标号-抖音",
+      "platform": "douyin",
+      "role": "同类目头部",
+      "url": "",
+      "note": "填好主页分享链接后启用；url 为空则不采集"
+    },
+    {
+      "id": "rival_xhs_example",
+      "owner": "待补充",
+      "name": "示例对标号-小红书",
+      "platform": "xiaohongshu",
+      "role": "同类目头部",
+      "xhs_id": "",
+      "note": "填好小红书号后启用"
+    }
+  ],
+  "keywords": {
+    "douyin": ["电动轮椅", "轮椅老人", "护理床", "代步车"],
+    "xiaohongshu": ["电动轮椅", "老人代步车", "适老化改造", "康复辅具"]
+  }
+}

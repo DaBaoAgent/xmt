@@ -8,12 +8,17 @@ logs/
 out/
 *.log
 
+# 客户业务数据（不入公开仓库）
+销售报表/
+*.xlsx
+
 # 采集数据（SQLite，本地生成，不入库）
 data/
 
 # 凭证 —— 永不入库
 小红书cookie.txt
 config/xhs_cookie.txt
+config/llm.local.json
 *.cookie
 .env
 *_token.json
