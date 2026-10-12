@@ -19,6 +19,7 @@ data/
 小红书cookie.txt
 config/xhs_cookie.txt
 config/llm.local.json
+config/*.local.json
 *.cookie
 .env
 *_token.json
