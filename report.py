@@ -18,7 +18,7 @@ from datetime import datetime
 
 import db
 from analytics import (PLATFORM_LABEL, fmt_num, fmt_delta, fmt_pct, fmt_ratio,
-                       today_str)
+                       today_str, clean_title)
 from analytics import growth, hits, bench
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -124,7 +124,7 @@ def _build_md(days):
     else:
         rows = []
         for w in hw:
-            title = w["title"]
+            title = clean_title(w["title"]) or ""
             title = (title[:40] + "…") if len(title) > 40 else title
             rows.append([
                 w["rank"], w["account_name"], w["platform_label"],

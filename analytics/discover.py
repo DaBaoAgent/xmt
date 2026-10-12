@@ -17,6 +17,7 @@ from collections import defaultdict
 from datetime import datetime
 
 import db
+from analytics import clean_title
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RIVALS_JSON = os.path.join(HERE, "config", "rivals.json")
@@ -58,7 +59,7 @@ def discover(platform=None, top=10, days=30, min_hits=1):
         a["diggs"].append(r.get("digg") or 0)
         a["keywords"].add(r.get("keyword") or "")
         if r.get("title"):
-            a["titles"].append(r["title"])
+            a["titles"].append(clean_title(r["title"]) or r["title"])
         if r.get("url"):
             a["urls"].append(r["url"])
 
@@ -150,12 +151,14 @@ def report(cands):
 
 
 def _classify_safe(title):
-    """复用 insight.direction 的题材分类器；不可用时退化为返回原文前 8 字。"""
+    """复用 insight.direction 的题材分类器；不可用时退化为返回前 8 字。
+    分类前先清洗（抖音标题常是整段文案，话题标签会污染题材判断）。"""
+    t = clean_title(title) or (title or "")
     try:
         from insight.direction import _classify
-        return _classify(title)
+        return _classify(t)
     except Exception:
-        return (title or "未分类")[:8]
+        return (t or "未分类")[:8]
 
 
 def content_gap(days=30, top=6):
@@ -186,7 +189,7 @@ def content_gap(days=30, top=6):
             if d > agg[c]["max_digg"]:
                 agg[c]["max_digg"] = d
             if len(agg[c]["examples"]) < 2:
-                agg[c]["examples"].append(r["title"])
+                agg[c]["examples"].append(clean_title(r["title"]) or r["title"])
         rows_out = [{"topic": k, "count": v["count"], "max_digg": v["max_digg"],
                      "examples": v["examples"]} for k, v in agg.items()]
         return sorted(rows_out, key=lambda x: (-x["max_digg"], -x["count"]))
@@ -196,8 +199,8 @@ def content_gap(days=30, top=6):
         "own_topics": stat(own)[:top],
         "rival_count": len(hits),
         "own_count": len(own),
-        "rival_titles": [r["title"] for r in hits],
-        "own_titles": [r["title"] for r in own],
+        "rival_titles": [t for t in (clean_title(r["title"]) for r in hits) if t],
+        "own_titles": [t for t in (clean_title(r["title"]) for r in own) if t],
     }
 
 
@@ -269,7 +272,13 @@ def report_gap(gap, rival_titles=None, own_titles=None):
         rp, op = _hit_rate(rival_titles, PERSON_WORDS), _hit_rate(own_titles, PERSON_WORDS)
         rsc, osc = _hit_rate(rival_titles, SCENE_WORDS), _hit_rate(own_titles, SCENE_WORDS)
         rsel, osel = _hit_rate(rival_titles, SELL_WORDS), _hit_rate(own_titles, SELL_WORDS)
-        if abs(rp - op) <= 8 and abs(rsc - osc) <= 8:
+        if rp - op >= 8:
+            print(f"      关键差异在「人称/角色词」：外部 {rp}% vs 自有 {op}%"
+                  f"（差 {round(rp - op, 1)} 个百分点）。")
+            print("      外部爆款习惯把「人」放在标题与画面最前（大爷 / 女友 / 年轻人 / 一家人），")
+            print("      自家内容更偏产品与功能描述 —— 这正是 A 线全实拍要解决的问题：")
+            print("      → 让真人、真实使用者出镜当主角，产品只做配角（一物一故事）。")
+        elif abs(rp - op) <= 8 and abs(rsc - osc) <= 8:
             print("      标题写法也接近（人称/场景词命中率相差不到 8 个百分点），")
             print("      所以卡点不在「标题怎么写」，在「内容形态」：")
             print("      外部爆款是真人出镜 + 生活叙事/人物反差（citywalk、逛超市、当事人吐槽），")

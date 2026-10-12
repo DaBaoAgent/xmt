@@ -21,7 +21,7 @@ from datetime import date, timedelta
 
 import db
 from analytics import (PLATFORM_LABEL, fmt_num, fmt_delta, render_table,
-                       parse_date, date_str, work_dt)
+                       parse_date, date_str, work_dt, clean_title)
 
 # 话题标签：抖音/小红书常见形如 #关键词 或 #关键词#，关键词一般不含空格
 _HASHTAG_RE = re.compile(r"#([^#\s]{1,30})#?")
@@ -156,8 +156,11 @@ def title_patterns(works):
       }
     """
     works = works or []
-    titles = [(w.get("title") or "").strip() for w in works]
-    titles = [t for t in titles if t]
+    raws = [(w.get("title") or "").strip() for w in works]
+    raws = [t for t in raws if t]
+    # 抖音/小红书的「标题」常是整段文案（含换行与话题标签）：长度与句式统计用
+    # 「首行去标签」版本，避免标题长度虚高（实测平均 153 字）；标签统计仍用原文。
+    titles = [t for t in (clean_title(r) for r in raws) if t] or raws
     n = len(titles)
     res = {
         "count": n,
@@ -174,7 +177,7 @@ def title_patterns(works):
 
     # 高频词：话题标签权重高，另统计中文双字词（去话题后）
     counts = {}
-    for t in titles:
+    for t in raws:
         for m in _HASHTAG_RE.findall(t):
             w = m.strip()
             if w:
@@ -196,7 +199,7 @@ def title_patterns(works):
     res["number_ratio"] = round(sum(1 for t in titles if _DIGIT_RE.search(t)) / n * 100, 1)
     res["exclamation_ratio"] = round(sum(1 for t in titles if ("!" in t or "！" in t)) / n * 100, 1)
     res["emoji_ratio"] = round(sum(1 for t in titles if _has_emoji(t)) / n * 100, 1)
-    ht = [len(_HASHTAG_RE.findall(t)) for t in titles]
+    ht = [len(_HASHTAG_RE.findall(t)) for t in raws]
     res["hashtag_avg"] = round(sum(ht) / n, 1)
     return res
 

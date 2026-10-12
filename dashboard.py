@@ -8,6 +8,7 @@ import html
 from datetime import datetime
 
 import db
+from analytics import clean_title
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "out", "dashboard.html")
@@ -72,7 +73,7 @@ def load():
 def _work_rows(ws, n=30):
     return "".join(
         f'<tr><td class="mono">{(x["publish_time"] or "")[:10]}</td>'
-        f'<td class="t">{esc((x["title"] or "")[:34])}</td>'
+        f'<td class="t">{esc(clean_title(x["title"], 34))}</td>'
         f'<td class="num">{fmt(x["digg"])}</td>'
         f'<td class="num">{fmt(x["comment"])}</td>'
         f'<td class="num">{fmt(x["share"])}</td></tr>' for x in ws[:n])
@@ -221,7 +222,7 @@ def hits_section(hits):
     for (plat, kw), rows in by_kw.items():
         trs = "".join(
             f'<tr><td class="num">{fmt(r["digg"])}</td><td class="num">{fmt(r["comment"])}</td>'
-            f'<td class="t">{esc((r["title"] or "")[:38])}</td>'
+            f'<td class="t">{esc(clean_title(r["title"], 38))}</td>'
             f'<td class="muted">{esc(r["author_name"])}</td>'
             f'<td class="mono">{(r["publish_time"] or "")[:10]}</td></tr>' for r in rows[:10])
         blocks.append(f'<div class="kwblock"><h3>{PLATFORM_LABEL.get(plat, plat)} · 「{esc(kw)}」'

@@ -16,12 +16,33 @@
   today_str()              今天 "YYYY-MM-DD"
   parse_time(s)            解析多种发布时间字符串 -> datetime
   work_dt(row)             从作品行取发布时间（优先 publish_ts，回退 publish_time）
+  clean_title(s, limit)    取首行 + 去话题标签 + 压缩空白（抖音「标题」常是整段文案）
 """
+import re
 import unicodedata
 from datetime import datetime, date, timedelta
 
 # 平台中文名
 PLATFORM_LABEL = {"douyin": "抖音", "xiaohongshu": "小红书", "channels": "视频号"}
+
+# ---------- 文本清洗 ----------
+
+_HASHTAG_STRIP = re.compile(r"#[^\s#]+")
+_WS_RE = re.compile(r"\s+")
+
+
+def clean_title(text, limit=None):
+    """抖音/小红书的「标题」字段常是整段文案（含换行与 #话题标签）。
+
+    取首行 + 去掉话题标签 + 压缩空白，用于长度/句式统计与列表展示。
+    原始数据不动（统计话题标签时仍用原文）。
+    """
+    if not text:
+        return ""
+    t = str(text).replace("\r", "\n").split("\n")[0]
+    t = _HASHTAG_STRIP.sub("", t)
+    t = _WS_RE.sub(" ", t).strip(" -—·|，,。.")
+    return t[:limit] if limit else t
 
 
 # ---------- 显示宽度与格式化 ----------
