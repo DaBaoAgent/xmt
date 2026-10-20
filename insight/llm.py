@@ -7,6 +7,10 @@ key 解析四级回退（任何一级都没有可用 key 时 available() 返回 
   3. Hermes 配置 ~/AppData/Local/hermes/config.yaml 的 api_keys 段（YAML 极简解析，按 provider 名匹配 deepseek）
   4. 环境变量 SILICONFLOW_API_KEY / ZHIPU_API_KEY / SUBLYX_API_KEY（配各自的 base_url）
 
+另有「零密钥」通道：WorkBuddy 云服务 LLM（provider=workbuddy_cloud）。
+配置写在 config/llm.local.json 的 cloud 段，走 /.cloud/llm/chat/completions 的 SSE 流式接口，
+用 publishableKey 鉴权，用户不需要自己的 API key。优先级：显式 key 通道都不可用时才启用。
+
 安全约定：key 只在内存里流转，绝不写入日志、文件或标准输出；
 错误信息里只出现 provider / base_url / model，不出现 key。
 
@@ -29,6 +33,7 @@ LOCAL_JSON = os.path.join(HERE, "config", "llm.local.json")
 
 TIMEOUT = 120          # 单次请求超时（秒）
 RETRIES = 2            # 失败重试次数（合计最多 3 次请求）
+CLOUD_TIMEOUT = 300    # 云服务 LLM 单次请求超时（长稿出稿较慢）
 
 # 各 provider 的默认 base_url / model（可用环境变量 XMT_LLM_BASE_URL、XMT_LLM_MODEL 覆盖）
 DEFAULTS = {
@@ -116,6 +121,100 @@ def _from_local_json():
         return None
     provider = _clean(d.get("provider")) or "deepseek"
     return _override(provider, _clean(d.get("base_url")), _clean(d.get("model")), key, "config/llm.local.json")
+
+
+# ---------- 零密钥通道：WorkBuddy 云服务 LLM ----------
+
+def _cloud_config():
+    """读 config/llm.local.json 的 cloud 段（或独立的 cloud.local.json）。
+
+    格式：{"cloud": {"endpoint": "https://xxx.app.workbuddy.host",
+                    "publishable_key": "wbpk_xxx",
+                    "model": "auto"}}
+    """
+    paths = [LOCAL_JSON, os.path.join(HERE, "config", "cloud.local.json")]
+    for p in paths:
+        if not os.path.exists(p):
+            continue
+        try:
+            with open(p, encoding="utf-8") as f:
+                d = json.load(f)
+        except Exception:
+            continue
+        if not isinstance(d, dict):
+            continue
+        c = d.get("cloud") if isinstance(d.get("cloud"), dict) else d
+        ep = _clean(c.get("endpoint"))
+        pk = _clean(c.get("publishable_key") or c.get("publishableKey"))
+        if not ep or not pk:
+            continue
+        return {
+            "provider": "workbuddy_cloud",
+            "base_url": ep.rstrip("/"),
+            "model": _clean(c.get("model")) or "hunyuan-chat",
+            "api_key": pk,
+            "source": f"WorkBuddy 云服务（{os.path.basename(p)}）",
+        }
+    return None
+
+
+def _cloud_chat(cfg, messages, temperature=0.7, max_tokens=2000):
+    """云服务 LLM 调用：SSE 流式，返回拼接后的完整文本。失败返回 None。"""
+    if requests is None:
+        return None
+    url = cfg["base_url"] + "/.cloud/llm/chat/completions"
+    headers = {
+        "x-wb-webapp-access-key": cfg["api_key"],
+        "Content-Type": "application/json",
+        "Accept": "text/event-stream",
+    }
+    payload = {
+        "model": cfg.get("model") or "hunyuan-chat",
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "stream": True,
+    }
+    for i in range(RETRIES + 1):
+        try:
+            resp = requests.post(url, headers=headers, json=payload,
+                                 timeout=CLOUD_TIMEOUT, stream=True)
+            if resp.status_code != 200:
+                _warn(f"第 {i + 1} 次云服务调用失败：HTTP {resp.status_code} "
+                      f"{_redact(str(resp.text)[:160], cfg['api_key'])}")
+                if i < RETRIES:
+                    time.sleep(1.5 * (i + 1))
+                continue
+            chunks = []
+            # 用 bytes 自行解码：requests 的 decode_unicode 会按 latin-1 误判中文
+            for raw in resp.iter_lines():
+                if not raw:
+                    continue
+                line = raw.decode("utf-8", errors="replace").strip()
+                if not line.startswith("data:"):
+                    continue
+                body = line[5:].strip()
+                if not body or body == "[DONE]":
+                    continue
+                try:
+                    d = json.loads(body)
+                except Exception:
+                    continue
+                for ch in (d.get("choices") or []):
+                    delta = ch.get("delta") or {}
+                    piece = delta.get("content")
+                    if piece:
+                        chunks.append(piece)
+            text = "".join(chunks).strip()
+            if text:
+                return text
+            _warn(f"第 {i + 1} 次云服务调用返回空内容（provider=workbuddy_cloud，"
+                  f"model={cfg.get('model')}）")
+        except Exception as e:
+            _warn(f"第 {i + 1} 次云服务调用异常：{type(e).__name__}: {e}")
+        if i < RETRIES:
+            time.sleep(1.5 * (i + 1))
+    return None
 
 
 # ---------- 第 3 级：Hermes 配置的 api_keys 段 ----------
@@ -233,6 +332,11 @@ def resolve():
             d = DEFAULTS[prov]
             return _override(prov, d["base_url"], d["model"], v, f"环境变量 {env_name}")
 
+    # 5) 零密钥兜底：WorkBuddy 云服务 LLM
+    cfg = _cloud_config()
+    if cfg:
+        return cfg
+
     return None
 
 
@@ -269,6 +373,8 @@ def chat(messages, model=None, temperature=0.7, max_tokens=2000):
     cfg = resolve()
     if not cfg:
         return None
+    if cfg.get("provider") == "workbuddy_cloud":
+        return _cloud_chat(cfg, messages, temperature=temperature, max_tokens=max_tokens)
     url = cfg["base_url"].rstrip("/") + "/chat/completions"
     payload = {
         "model": model or cfg["model"],

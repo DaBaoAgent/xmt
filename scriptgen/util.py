@@ -41,6 +41,26 @@ def config():
     return load_json("config/scriptgen.json", {}) or {}
 
 
+def redfox_api_key():
+    """RedFox 密钥：环境变量优先，其次本地私密文件 config/redfox.local.json。
+
+    密钥不写进 scriptgen.json（那个文件是入库的），也不进日志。
+    """
+    key = os.environ.get("REDFOX_API_KEY", "").strip()
+    if key:
+        return key
+    local = load_json("config/redfox.local.json", {}) or {}
+    return str(local.get("api_key") or "").strip()
+
+
+def ensure_redfox_env():
+    """把本地兜底密钥写回环境变量，供官方 SDK 读取。返回是否可用。"""
+    key = redfox_api_key()
+    if key:
+        os.environ["REDFOX_API_KEY"] = key
+    return bool(key)
+
+
 def personas_config():
     return load_json("config/personas.json", {}) or {}
 

@@ -147,14 +147,21 @@ python -m scriptgen personas
 - `config/rivals.json` —— 对标账号 + 监控关键词。**日常维护只需编辑根目录 `对标账号.txt`**（一行一个号，写名字 + 主页链接 / 小红书号即可），然后 `python import_rivals.py` 导入；也可用 `python -m analytics.discover --write` 从搜索命中的高表现号里自动补充。
 - `config/douyin_cookie.txt`（不入库）—— 抖音**搜索页**需登录态，否则跳验证码中间页。
 - `小红书cookie.txt` / `config/xhs_cookie.txt` —— **已停用**（2026-10-19 平台风控提示），小红书改走 `REDFOX_API_KEY`。
-- `config/llm.local.json`（不入库）—— insight 层 LLM 配置，格式：
+- `config/llm.local.json`（不入库）—— insight 层 LLM 配置。**零密钥模式（当前默认）**：写 `cloud` 段走 WorkBuddy 云服务 LLM，用户不需要自己的 API key：
+  ```json
+  {"cloud": {"endpoint": "https://xmt-script-assistant.app.workbuddy.host",
+             "publishable_key": "wbpk_xxx", "model": "hunyuan-chat"}}
+  ```
+  **自有 key 模式**：填 `api_key` 段走 OpenAI 兼容接口（优先级高于 cloud 段）：
   ```json
   {"provider": "deepseek", "base_url": "https://api.deepseek.com/v1",
    "model": "deepseek-chat", "api_key": "..."}
   ```
+  > 云服务 LLM 只支持 SSE 流式（`stream: true`）；`auto` 等纯推理模型（`onlyReasoning: true`）会只吐 `reasoning_content` 而无正文，出稿请用 `hunyuan-chat` 这类非推理模型。
+- `config/redfox.local.json`（不入库）—— RedFox API Key 本地兜底（环境变量 `REDFOX_API_KEY` 优先）。SDK 装法：`pip install git+https://github.com/redfox-data/redfox-python-sdk.git`（PyPI 上的 `redfox` 是同名无关包，**不要装**）。
 - `config/scriptgen.json` —— 拍摄脚本模块：路径、RedFox 轮询/阈值、ASR 模型、公司 KB、质量检查。
 - `config/personas.json` —— 三号人设卡（draft，可人工校准）。
-- `config/showroom_inventory.json` —— 阳光展厅可拍产品（confirmed / candidate / pending）与证据。
+- `config/showroom_inventory.json` —— 阳光展厅可拍产品（confirmed / candidate / pending）与证据。**2026-10-20 用户确认：阳光确定款为 P11 与希维尔（XFY）800 元款**，两者均已入 confirmed，P21 口径作废。
 - `config/compliance.json` —— 医疗广告合规规则、免责声明、发布检查清单。
 
 ## 定时任务

@@ -3,7 +3,7 @@
   "paths": {
     "knowledge_dir": "knowledge",
     "reference_dir": "knowledge/reference",
-    "scripts_dir": "data/scriptgen/scripts",
+    "scripts_dir": "out/scripts",
     "batch_dir": "data/scriptgen/batches",
     "tmp_dir": "data/tmp"
   },

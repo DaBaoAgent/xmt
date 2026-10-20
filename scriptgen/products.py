@@ -171,15 +171,74 @@ def _read_doc(kb, doc_id, max_chars=5000):
         return ""
 
 
-def extract_facts(text, source, limit=8):
+SECTION_KEYWORDS = ("产品要点", "核心卖点", "详细参数", "参数表", "卖点", "适用人群",
+                  "适用场景", "电商宣传", "产品优势", "功能", "配置", "规格")
+
+# 兜底用的结构/功能特征词：营销配文里描述产品怎么做的句子
+FEATURE_WORDS = ("软垫", "储物袋", "刹车", "锁扣", "折叠", "可调", "调节", "车架",
+                "轮胎", "坐垫", "靠背", "扶手", "踏板", "控制器", "电池", "电机",
+                "减震", "轮", "收折", "折叠后", "放在", "带", "支持", "可", "轻便",
+                "方便", "省力", "结构", "设计")
+
+
+def _section_body(lines, section_words):
+    """取出「产品要点/核心卖点/参数表」等小节标题下的正文行（已归一化）。"""
+    out = []
+    active = False
+    for ln in lines:
+        if re.match(r"^#{1,6}\s", ln):
+            active = any(w in ln for w in section_words)
+            continue
+        if active and ln:
+            body = re.sub(r"^[-*]\s*", "", ln.strip())
+            body = re.sub(r"\s*\|\s*", " ", body).strip()
+            if body:
+                out.append(body)
+    return out
+
+
+def extract_facts(text, source, limit=8, model=None, aliases=None):
+    """从文档抽硬事实。
+
+    model/aliases 传入时优先只取包含该型号或别名的行；全量目录这类文档里
+    没有型号锚点时，退回按关键词抽取（避免抓到别的品类的行）。
+    """
     out, seen = [], set()
     keywords = ("重量", "整车", "续航", "电池", "电机", "刹车", "折叠", "承重", "材质",
                 "尺寸", "适用", "配置", "功能", "卖点", "坐垫", "轮胎", "踏板", "扶手")
+    anchors = []
+    if model:
+        m = str(model).strip()
+        if m:
+            anchors = [m]
+    for a in (aliases or []):
+        a = str(a or "").strip()
+        if a and a not in anchors:
+            anchors.append(a)
+    lines = []
+    raw_lines = []
     for raw in str(text or "").splitlines():
         line = raw.strip().strip("|").strip()
+        raw_lines.append(line)
         line = re.sub(r"^#+\s*", "", line)
         line = re.sub(r"^[-*]\s*", "", line)
         line = re.sub(r"\s*\|\s*", " ", line).strip()
+        lines.append(line)
+
+    anchored = []
+    if anchors:
+        hit_lines = [ln for ln in lines if any(a and a in ln for a in anchors)]
+        # 命中行太少时（多为标题/目录行，真实卖点行不含型号字样），
+        # 保留命中行 + 卖点/参数类小节下的正文行
+        usable = [ln for ln in hit_lines
+                  if len(ln) >= 12 and not ln.startswith((">", "#", "原件：", "来源："))]
+        # 锚定行本身就是有效事实（对照表里型号只占一行），只要有内容行即可
+        anchored = hit_lines if usable else []
+        if anchored:
+            section_lines = _section_body(raw_lines, SECTION_KEYWORDS)
+            lines = anchored + [ln for ln in section_lines if ln not in anchored]
+
+    for line in lines:
         if len(line) < 12 or len(line) > 240:
             continue
         if line.startswith(("http", ">", '"', "{", "}", "原件：", "来源：", "文件:", "相对路径", "目录:")):
@@ -199,6 +258,26 @@ def extract_facts(text, source, limit=8):
         out.append({"claim": line, "source": source})
         if len(out) >= limit:
             break
+    if not out:
+        # 兜底：营销配文类文档没有「参数」字样，改按结构/功能特征词抓描述句
+        for line in lines:
+            if len(line) < 12 or len(line) > 240:
+                continue
+            if line.startswith(("http", ">", '"', "{", "}", "原件：", "来源：", "文件:", "相对路径", "目录:")):
+                continue
+            if any(x in line for x in ("电商宣传参考", "工作资料库", "自动索引导出", "MEMORY_FIELDS",
+                                       "与用户的关联", "基本信息", "资料文档", "存于", "内容按",
+                                       "同目录", "同属", "归档", "原文件名", "索引", "知识库",
+                                       "source_extraction", '"version"')):
+                continue
+            if line in seen:
+                continue
+            if not any(k in line for k in FEATURE_WORDS):
+                continue
+            seen.add(line)
+            out.append({"claim": line, "source": source})
+            if len(out) >= limit:
+                break
     return out
 
 
@@ -219,7 +298,8 @@ def _facts_for(product, kb):
     if not texts:
         return "", [], []
     doc_id, text = texts[0]
-    facts = extract_facts(text, doc_id)
+    model = product.get("model") or ""
+    facts = extract_facts(text, doc_id, model=model, aliases=product.get("aliases"))
     return text[:5000], facts, [doc_id]
 
 

@@ -38,10 +38,22 @@ PLATFORMS = ("xiaohongshu", "channels")
 
 
 def available():
-    return bool(os.environ.get("REDFOX_API_KEY"))
+    """环境变量优先，其次 config/redfox.local.json 本地兜底。"""
+    if os.environ.get("REDFOX_API_KEY", "").strip():
+        return True
+    try:
+        import util
+        return bool(util.redfox_api_key())
+    except Exception:
+        return False
 
 
 def _client():
+    try:
+        import util
+        util.ensure_redfox_env()
+    except Exception:
+        pass
     from redfox import RedFoxClient
     return RedFoxClient()
 

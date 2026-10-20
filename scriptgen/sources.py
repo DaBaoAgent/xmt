@@ -71,6 +71,7 @@ class RedFoxExtractor:
 
     def client(self):
         if self._client is None:
+            util.ensure_redfox_env()
             from redfox import RedFoxClient
             self._client = RedFoxClient()
         return self._client
