@@ -1,4 +1,6 @@
-"""个人号 第 5 篇：贴对标原句改写（抖音·爱优护电动轮椅）。
+"""品牌号 第 2 篇（编号 005）：贴对标原句改写（抖音·爱优护电动轮椅）。
+
+账号：品牌号（单人口播 · 小冯）—— 品牌号也支持一个人拍，不必双人对话。
 
 对标（爱优护电动代步车，15.6s / 78 字）：
   没想到，他的上班坐驾这么特别，竟然是一台电动代步车，
@@ -17,10 +19,9 @@
   坐上就能直接开走 → 坐好就走
   日常短途出行也不用总麻烦家人 → 平常出门买菜接娃，不用再麻烦家里人
 
-个人号人设（config/personas.json）：
-  小冯，工厂店经营者，说话朴实带本地口音；真实场景开场 → 具体细节 →
-  产品自然出现 → 朴实邀请。45-60 秒 / 200-280 字。
-  CTA 只能落展厅地址（合规 contact 规则禁「加微信」）。
+账号口径：
+  品牌号，单人出镜（小冯）。30-45 秒 / 150-240 字。
+  CTA 落展厅地址（合规 contact 规则禁「加微信」）。
 """
 import os
 import io
@@ -46,9 +47,8 @@ LINES = [
     "侧面坐上去省劲多了，腿不用使劲蹬。",
     "开起来简单，摇一摇就走，不用学。",
     "坐好就走，平常出门买菜接娃，都不用再麻烦家里人。",
-    "说实话，这种车我们展厅里天天有人问。",
-    "有位阿姨跟我说，早先用轮椅出门得麻烦人，现在自己就能出去转转了。",
-    "您要是也想要一台这样的，别光看照片，来展厅坐一坐、试一圈最实在。",
+    "有位阿姨跟我说，早先出门得麻烦人，现在自己就能出去转转了。",
+    "您要是也想要一台，别光看照片，来展厅坐一坐、试一圈最实在。",
     "我是小冯，在苏州阳光大厦九一一室，来了我帮您试。",
 ]
 
@@ -81,8 +81,8 @@ def main():
     scan = compliance.scan_script(body_text, {"disclaimer": disclaimer}, "", FACT_TEXT, [])
 
     code = "SG-20261020-005"
-    target = round(15.6 * 1.0, 1)          # target_duration：人设45-60 ∩ 对标15.6的80%-120%
-    target = max(45 * 0.8, min(60 * 1.2, target))
+    # 品牌号人设 30-45 秒；对标 15.6 秒低于下限 → 目标取人设下限 30 秒
+    target = 30.0
     now = util.now_iso()
     con = sqlite3.connect(DB)
     con.row_factory = sqlite3.Row
@@ -104,7 +104,7 @@ def main():
             "shooting_tips_json, publish_json, compliance_json, facts_json, word_count, "
             "estimated_seconds, target_seconds, version, product_scope, notes) "
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            (code, now, now, "待审", "personal", "个人号",
+            (code, now, now, "待审", "brand", "品牌号",
              json.dumps(["小冯"], ensure_ascii=False), "douyin",
              "7670093302795980066", "https://v.douyin.com/14bsXXYzpZk",
              "你见过这么高级的座驾吗？#爱优护电动轮椅 #电动轮椅 #关爱老人",
@@ -114,7 +114,7 @@ def main():
              json.dumps({"disclaimer": disclaimer}, ensure_ascii=False),
              json.dumps(scan, ensure_ascii=False), json.dumps([], ensure_ascii=False),
              wc, sec, target, 1, "品类",
-             "个人号小冯第一人称，贴对标「通勤车讲究」骨架逐句改写；"
+             "品牌号小冯单人口播（品牌号也支持单人拍），贴对标「通勤车讲究」骨架逐句改写；"
              "真实场景+展厅细节+朴实邀请，产品品类通用不绑型号"))
         print("已新建", code)
     con.commit()
