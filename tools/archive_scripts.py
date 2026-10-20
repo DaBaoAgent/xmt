@@ -1,18 +1,19 @@
-"""把 sg_scripts 里的定稿按账号归档成三个 TXT 收集文档。
+"""把 sg_scripts 里的定稿按账号归档成三个 TXT 收集文档 + 三个 HTML 对照表。
 
 用法：
-  python tools/archive_scripts.py            # 归档全部「待审/已通过」的稿子
-  python tools/archive_scripts.py --rebuild  # 清空三个文件后重建（去重、重排序）
+  python tools/archive_scripts.py            # 全部刷新（TXT 归档 + HTML 对照表）
+  python tools/archive_scripts.py --txt      # 只刷 TXT
+  python tools/archive_scripts.py --html     # 只刷 HTML
 
-产物（口播稿/ 目录）：
-  口播稿/口播稿-翔哥号.txt    单人口播 ｜ 出镜：翔哥
-  口播稿/口播稿-品牌号.txt    双人问答 ｜ 出镜：心悦 + 小冯
-  口播稿/口播稿-个人号.txt    单人口播 ｜ 出镜：小冯
+产物：
+  口播稿/口播稿-{翔哥号,品牌号,个人号}.txt   纯文本，方便复制到微信
+  out/对标对照表/index.html                 入口页，点卡片进各号文档
+  out/对标对照表/对标对照表-{号}.html        左右分栏：左对标，右改稿
 
 规则：
   - 只收 status in (待审, 已通过) 且有逐字稿的记录；失败/未定的不出稿不入档
   - 按创建时间升序编号，序号连续；同 code 只保留最新版本
-  - 改稿后重跑本脚本，会重建文件，不会重复堆叠
+  - 每次运行都重建文件，不会重复堆叠
 """
 import os
 import sys
@@ -131,5 +132,32 @@ def main():
         print("%-18s %d 篇  ->  口播稿\\%s" % (fname, len(blocks), fname))
 
 
+def sync_html():
+    """顺带刷新三个 HTML 对照表（同一套数据源，保证 TXT 与网页一致）。"""
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_btt", os.path.join(ROOT, "tools", "build_tencent_table.py"))
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        rows = m.build()
+        by_acc = {}
+        for r in rows:
+            by_acc.setdefault(r.get("_account_id") or "oral", []).append(r)
+        made = m.write_html(by_acc)
+        print()
+        print("HTML 对照表 ->  out\\对标对照表\\")
+        for fn, n in made:
+            print("  %-30s %s" % (fn, ("%d 条" % n) if n >= 0 else "（入口页）"))
+    except Exception as e:
+        print("（HTML 对照表刷新失败：%s: %s）" % (type(e).__name__, str(e)[:120]))
+
+
 if __name__ == "__main__":
-    main()
+    args = set(sys.argv[1:])
+    if "--html" in args:
+        sync_html()
+    else:
+        main()
+        if "--txt" not in args:
+            sync_html()

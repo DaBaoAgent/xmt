@@ -35,6 +35,13 @@ ACCOUNT_MAP = {
     "personal": "个人号（单人口播）｜小冯",
 }
 
+# 账号 id → (显示名, 出镜, 拍摄形式, 文件名, 卡片主色)
+ACCOUNT_CARDS = {
+    "oral": ("翔哥号", "翔哥", "单人口播", "对标对照表-翔哥号.html", "#f0d9bd"),
+    "brand": ("品牌号", "心悦 + 小冯", "双人问答", "对标对照表-品牌号.html", "#c9b6e4"),
+    "personal": ("个人号", "小冯", "单人口播", "对标对照表-个人号.html", "#b8d4ea"),
+}
+
 
 def _flat(text):
     return " ".join(str(text or "").split())
@@ -166,6 +173,7 @@ def build():
         url = r.get("benchmark_url") or ""
         out.append({
             "序号": i,
+            "_account_id": r.get("account_id") or "oral",
             "账号｜出镜": ACCOUNT_MAP.get(r.get("account_id"),
                                           r.get("account_label") or ""),
             "标题": r.get("title") or "",
@@ -274,14 +282,19 @@ HTML_TMPL = """<!DOCTYPE html>
     padding:1px 7px;border-radius:5px;margin-right:5px}
   .foot{color:var(--ink2);font-size:12.5px;text-align:center;margin-top:26px}
   .empty{color:var(--ink2);font-size:13px}
+  a.acct{display:flex;align-items:center;gap:12px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:15px 20px;margin-bottom:14px;
+    text-decoration:none;color:inherit;transition:box-shadow .15s,border-color .15s}
+  a.acct:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(31,95,208,.12)}
+  a.acct .no{background:var(--accent)}
   @media(max-width:1000px){.cols{grid-template-columns:1fr}.col.left{border-right:none;
     border-bottom:1px solid var(--line)}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>对标 vs 改稿 · 左右对照表</h1>
-  <div class="sub">共 __N__ 条 ｜ 生成于 __TIME__ ｜ 来源：xmt scriptgen 定稿库</div>
+  <h1>__ACCT__ · 对标 vs 改稿</h1>
+  <div class="sub">出镜：__PRES__ ｜ 形式：__FORM__ ｜ __COUNT__ ｜ 生成于 __TIME__</div>
   <div class="tip">
     <b>用法</b>：点左侧「▶ 看原片」跳到视频 → 对着右侧逐字稿看结构怎么改的 → 右边是可直接拿去拍的版本。
     对标原片有价格和数字的，<b>一个都不能照抄</b>，只能学它的结构。
@@ -307,7 +320,7 @@ def _kv_html(text):
         "<div>%s</div>" % _esc(x) for x in lines) + "</div>"
 
 
-def _card_html(r):
+def _card_html(r, idx=None):
     url = str(r.get("对标链接（点击看原片）") or "")
     url_html = ('<a class="vlink" href="%s" target="_blank" rel="noopener">▶ 看原片</a>'
                 % _esc(url)) if url.startswith("http") else '<div class="empty">（无链接）</div>'
@@ -315,12 +328,12 @@ def _card_html(r):
     tips = str(r.get("拍摄提示") or "")
     comp = str(r.get("合规自检") or "")
     passed = "通过" in comp
-    meta_bits = [str(r.get("账号｜出镜") or ""), str(r.get("时长 / 字数") or ""),
-                 str(r.get("状态") or "")]
+    no = idx if idx is not None else r.get("序号")
+    meta_bits = [str(r.get("时长 / 字数") or ""), str(r.get("状态") or "")]
     return f"""
 <div class="card">
   <div class="chead">
-    <div class="no">{r['序号']}</div>
+    <div class="no">{no}</div>
     <div>
       <div class="ctitle">{_esc(r.get('标题'))}</div>
       <div class="cmeta">{_esc(' ｜ '.join(b for b in meta_bits if b))}</div>
@@ -352,29 +365,80 @@ def _card_html(r):
 </div>"""
 
 
-def write_html(rows, path=None):
+def _render_html(rows, acct_id):
+    """把某账号的稿子渲染成完整 HTML。"""
     from datetime import datetime
-    cards = "\n".join(_card_html(r) for r in rows)
-    if not rows:
-        cards = '<div class="card"><div class="coltag">暂无定稿</div>' \
-                '<p class="empty">给我对标链接并说明是哪个号，出稿后会自动出现在这里。</p></div>'
+    label, present, form, _fname, tone = ACCOUNT_CARDS[acct_id]
+    cards = "\n".join(_card_html(r, idx) for idx, r in enumerate(rows, 1))
+    if not cards:
+        cards = ('<div class="card"><div class="coltag">暂无定稿</div>'
+                 '<p class="empty">给我对标链接并说明是这个号，出稿后会自动出现在这里。</p></div>')
     html = (HTML_TMPL
+            .replace("__ACCT__", label)
+            .replace("__PRES__", present)
+            .replace("__FORM__", form)
             .replace("__CARDS__", cards)
+            .replace("__COUNT__", ("共 %d 条定稿" % len(rows)) if rows else "暂无定稿")
             .replace("__N__", str(len(rows)))
+            .replace("__TONE__", tone)
             .replace("__TIME__", datetime.now().strftime("%Y-%m-%d %H:%M")))
-    out = path or os.path.join(ROOT, "out", "对标对照表.html")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    with open(out, "w", encoding="utf-8") as f:
-        f.write(html)
-    return out
+    return html
+
+
+def write_html(rows_by_acc, out_dir=None):
+    """按账号分别生成 HTML，返回 [(文件名, 条数), ...]。"""
+    out_dir = out_dir or os.path.join(ROOT, "out", "对标对照表")
+    os.makedirs(out_dir, exist_ok=True)
+    made = []
+    for acct_id, (label, _p, _f, fname, _t) in ACCOUNT_CARDS.items():
+        rows = rows_by_acc.get(acct_id) or []
+        # 每号内部按创建顺序重新编号
+        path = os.path.join(out_dir, fname)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(_render_html(rows, acct_id))
+        made.append((fname, len(rows)))
+    # 留一个入口页，方便一次打开三个
+    index = os.path.join(out_dir, "index.html")
+    links = "".join(
+        '<a class="acct" href="%s"><div class="no">%d</div><div>'
+        '<div class="ctitle">%s</div><div class="cmeta">%s</div></div></a>'
+        % (fn, n, ACCOUNT_CARDS[a][0], _acc_note(n))
+        for a, (fn, n) in zip(ACCOUNT_CARDS, made))
+    with open(index, "w", encoding="utf-8") as f:
+        f.write(_index_html(links))
+    made.append(("index.html", -1))
+    return made
+
+
+def _acc_note(n):
+    return ("共 %d 条定稿" % n) if n else "暂无定稿"
+
+
+def _index_html(links):
+    from datetime import datetime
+    return HTML_TMPL.replace("__ACCT__", "全部账号") \
+        .replace("__PRES__", "翔哥 / 心悦+小冯 / 小冯") \
+        .replace("__FORM__", "三个号分开管理") \
+        .replace("__CARDS__", links) \
+        .replace("__COUNT__", "点下面卡片进各自的文档") \
+        .replace("__N__", "3") \
+        .replace("__TONE__", "#f0d9bd") \
+        .replace("__TIME__", datetime.now().strftime("%Y-%m-%d %H:%M"))
 
 
 def main():
     rows = build()
     if "--html" in sys.argv:
-        p = write_html(rows)
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        print("已生成：%s（%d 条）" % (p, len(rows)))
+        rows_by_acc = {}
+        for r in rows:
+            rows_by_acc.setdefault(
+                r.get("_account_id") or "oral", []).append(r)
+        made = write_html(rows_by_acc)
+        base = os.path.join(ROOT, "out", "对标对照表")
+        for fn, n in made:
+            print("%-32s %s" % (fn, ("%d 条" % n) if n >= 0 else "（入口页）"))
+        print("目录：%s" % base)
         return
     if "--md" in sys.argv:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
