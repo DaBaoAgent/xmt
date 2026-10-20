@@ -169,8 +169,24 @@ def count_chars(text):
     return len(re.sub(r"\s+", "", str(text or "")))
 
 
-def estimate_seconds(text, chars_per_sec=4.2):
-    n = count_chars(text)
+def strip_speakers(text):
+    """去掉「心悦：」「小冯：」这类说话人前缀，只留台词。
+
+    提词稿上说话人是要印出来的，但时长/字数只该按实际念出来的字算，
+    否则双人对话会被前缀虚增十几个字、算出偏长的时长。
+    """
+    t = str(text or "")
+    t = re.sub(r"(?m)^\s*[^\s：:]{1,8}[：:]\s*", "", t)
+    return t
+
+
+def count_spoken(text):
+    """按实际念出的字数统计（不含说话人前缀）。"""
+    return count_chars(strip_speakers(text))
+
+
+def estimate_seconds(text, chars_per_sec=4.2, spoken_only=False):
+    n = count_spoken(text) if spoken_only else count_chars(text)
     return round(n / float(chars_per_sec or 4.2), 1) if n else 0.0
 
 

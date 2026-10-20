@@ -111,8 +111,10 @@ def generate(account_id, persona, ref, transcript, breakdown, product, options=N
             scan = compliance.scan_script(
                 body_text, out.get("publish"), (transcript or {}).get("text") or "",
                 brief.get("fact_text") or "", brief.get("facts") or [])
-    word_count = util.count_chars(body_text)
-    estimated = util.estimate_seconds(body_text)
+    # 字数/时长按实际念出来的台词算（去掉「心悦：」这类说话人前缀）
+    spoken = util.strip_speakers(body_text)
+    word_count = util.count_chars(spoken)
+    estimated = util.estimate_seconds(spoken)
     out["word_count"] = word_count
     out["estimated_seconds"] = estimated
     out["target_seconds"] = duration
@@ -331,9 +333,23 @@ def _rule_generate(account_id, persona, ref, breakdown, brief, duration):
 # ---------------- 规范化 ----------------
 
 def body_plain_text(body):
+    """把 body 转成纯文本。dialogue 格式保留「说话人：」前缀，便于提词和归档阅读。"""
     if isinstance(body, dict):
         lines = body.get("lines") or []
-        return "\n".join(str(x.get("text") or "").strip() for x in lines if isinstance(x, dict))
+        fmt = str(body.get("format") or "").lower()
+        out = []
+        for x in lines:
+            if not isinstance(x, dict):
+                continue
+            text = str(x.get("text") or "").strip()
+            if not text:
+                continue
+            sp = str(x.get("speaker") or "").strip()
+            if fmt == "dialogue" and sp:
+                out.append("%s：%s" % (sp, text))
+            else:
+                out.append(text)
+        return "\n".join(out)
     if isinstance(body, list):
         return "\n".join(str(x.get("text") if isinstance(x, dict) else x) for x in body)
     return str(body or "")
@@ -568,7 +584,9 @@ def revise(script, instruction, use_llm=True, target_seconds=None):
                                   product_brief.get("fact_text") or "", facts)
     out["compliance"] = scan
     out["status"] = "待审" if scan.get("ok") else "合规待修"
-    out["word_count"] = util.count_chars(body_text)
-    out["estimated_seconds"] = util.estimate_seconds(body_text)
+    # 字数/时长按实际念出来的台词算（去掉说话人前缀）
+    spoken = util.strip_speakers(body_text)
+    out["word_count"] = util.count_chars(spoken)
+    out["estimated_seconds"] = util.estimate_seconds(spoken)
     out["body_text"] = body_text
     return out
