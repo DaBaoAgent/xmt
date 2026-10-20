@@ -23,7 +23,7 @@ COLUMNS = [
     "对标信息",
     "对标结构拆解",
     "我的逐字稿",
-    "时长 / 字数",
+    "时长 / 字数 / 产品",
     "拍摄提示",
     "合规自检",
     "状态",
@@ -142,6 +142,16 @@ def _text_lines(val):
     return _flat(val)
 
 
+def _product_line(r):
+    """产品口径：具体型号 / 品类通用 / 不代入产品。"""
+    model = (r.get("product_model") or "").strip()
+    if model:
+        return model
+    scope = (r.get("product_scope") or "").strip()
+    return {"不代入": "不代入产品（不绑具体型号）",
+            "型号": "具体型号"}.get(scope, "品类通用（不写具体型号）")
+
+
 def build():
     con = sqlite3.connect(DB)
     con.row_factory = sqlite3.Row
@@ -181,8 +191,9 @@ def build():
             "对标信息": "\n".join(info_lines),
             "对标结构拆解": structure or "（无）",
             "我的逐字稿": r.get("body_md") or "",
-            "时长 / 字数": "约 %.1f 秒 ｜ %s 字" % (
-                float(r.get("estimated_seconds") or 0), r.get("word_count") or "—"),
+            "时长 / 字数 / 产品": "约 %.1f 秒 ｜ %s 字\n产品：%s" % (
+                float(r.get("estimated_seconds") or 0), r.get("word_count") or "—",
+                _product_line(r)),
             "拍摄提示": "\n".join(
                 "%d. %s" % (n, t) for n, t in
                 enumerate(json.loads(r.get("shooting_tips_json") or "[]"), 1)) or "（无）",
@@ -329,7 +340,8 @@ def _card_html(r, idx=None):
     comp = str(r.get("合规自检") or "")
     passed = "通过" in comp
     no = idx if idx is not None else r.get("序号")
-    meta_bits = [str(r.get("时长 / 字数") or ""), str(r.get("状态") or "")]
+    meta_bits = [str(r.get("时长 / 字数 / 产品") or "").replace("\n", " ｜ "),
+                 str(r.get("状态") or "")]
     return f"""
 <div class="card">
   <div class="chead">

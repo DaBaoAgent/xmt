@@ -89,8 +89,14 @@ def render(r, idx):
         bench = " ".join(x.strip() for x in bench.splitlines() if x.strip())
         lines.append("对标：%s（%s）" % (bench[:70], r.get("source_platform") or ""))
         lines.append("      %s" % (r.get("benchmark_url") or ""))
-    prod = (r.get("product_model") or "").strip() or "品类通用（不写具体型号）"
-    lines.append("产品：%s" % prod)
+    prod = (r.get("product_model") or "").strip()
+    if prod:
+        prod_line = prod
+    else:
+        scope = (r.get("product_scope") or "").strip()
+        prod_line = {"不代入": "不代入产品（不绑定具体型号）",
+                     "型号": "具体型号"}.get(scope, "品类通用（不写具体型号）")
+    lines.append("产品：%s" % prod_line)
     lines.append("")
     lines.append("—— 逐字稿 ——")
     lines.append("")
