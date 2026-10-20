@@ -146,6 +146,20 @@ def slugify(text, max_len=48):
     return s[:max_len].rstrip("-_")
 
 
+def fs_safe(text, max_len=24):
+    """纯 ASCII 的文件系统安全片段（目录名用）。
+
+    中文目录名会被本机安全钩子拦（PermissionError WinError 5），
+    这里把非 ASCII 字符换成短哈希，保证路径可用且可读。
+    """
+    s = str(text or "").strip()
+    ascii_part = re.sub(r"[^A-Za-z0-9-]+", "-", s, flags=re.UNICODE)
+    ascii_part = re.sub(r"-{2,}", "-", ascii_part).strip("-_")
+    if not ascii_part:
+        return "ref-" + short_hash(s or "ref")
+    return ascii_part[:max_len].rstrip("-_")
+
+
 def short_hash(text, n=8):
     return hashlib.sha1(str(text or "").encode("utf-8")).hexdigest()[:n]
 

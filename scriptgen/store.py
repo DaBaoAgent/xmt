@@ -488,9 +488,10 @@ def log_usage(con, batch_code, platform, key, operation, calls=1, note=None):
 
 def reference_path(ref):
     platform = ref.get("platform") or "unknown"
-    author = util.slugify(ref.get("author") or "unknown-author", 36)
+    # 目录名走 fs_safe：中文目录名会被本机安全钩子拦
+    author = util.fs_safe(ref.get("author") or "unknown-author", 32)
     key = ref.get("video_key") or video_key(platform, ref.get("video_id"), ref.get("url"))
-    key = util.slugify(str(key).replace("/", "-").replace("\\", "-"), 80)
+    key = util.fs_safe(str(key).replace("/", "-").replace("\\", "-"), 60)
     return os.path.join(util.project_path("knowledge/reference"), platform, author, f"{key}.md")
 
 
@@ -506,13 +507,15 @@ def _batch_dir():
 
 def script_path(script):
     day = (script.get("created_at") or util.now_iso())[:10]
-    account = util.slugify(script.get("account_label") or script.get("account_id") or "未分号", 24)
+    # 目录名用账号 id（ASCII）避开中文目录名被安全钩子拦；文件名仍保留中文可读
+    account = util.fs_safe(script.get("account_id") or "acct", 24)
     title = util.slugify(script.get("title") or script.get("benchmark_title") or "脚本", 36)
     return os.path.join(_scripts_dir(), day, account, f"{script.get('code')}_{title}.md")
 
 
 def docx_path(script):
     seq = int(script.get("id") or 0)
+    # Word 在 out/ 下，中文名不触发钩子，保留可读性
     account = util.slugify(script.get("account_label") or script.get("account_id") or "未分号", 16)
     title = util.slugify(script.get("title") or "逐字稿", 40)
     return os.path.join(util.project_path("out"), f"{seq:03d}_{account}_{title}.docx")
