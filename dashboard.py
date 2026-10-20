@@ -15,7 +15,8 @@ OUT = os.path.join(HERE, "out", "dashboard.html")
 
 PLATFORM_LABEL = {"douyin": "抖音", "xiaohongshu": "小红书", "channels": "视频号"}
 PLATFORM_ORDER = ["douyin", "xiaohongshu", "channels"]
-CHANNELS_NOTE = "视频号无网页前台，免费免登录不可行"
+CHANNELS_NOTE = ("RedFox 视频号库当前未收录矩阵内 3 个号（2026-10-20 实测 search_users / "
+                 "get_user_works 均返回 0），暂无自动化采集通道；请核对微信内实际昵称，或申请广域库")
 
 
 def fmt(n):
@@ -54,6 +55,7 @@ def sparkline(values, w=120, h=28, color="#4f7cff"):
 
 def load():
     con = db.connect()
+    # 读全部账号用于展示；已停用（enabled=0）的号不计入"已接入"，但仍在分区里显示状态
     cfg = [dict(r) for r in con.execute("SELECT * FROM accounts ORDER BY kind, platform, id")]
     snaps = con.execute("SELECT * FROM account_snapshots ORDER BY account_id, snap_date").fetchall()
     works = con.execute("SELECT * FROM works ORDER BY account_id, publish_ts DESC").fetchall()
@@ -66,8 +68,12 @@ def load():
            WHERE snap_date = (SELECT MAX(snap_date) FROM hot_items)
            ORDER BY platform, rank""").fetchall()
     ins = con.execute("SELECT * FROM insights ORDER BY created_at DESC LIMIT 6").fetchall()
+    topics = con.execute(
+        """SELECT * FROM topics
+           WHERE COALESCE(status, 'new') != 'dropped'
+           ORDER BY score DESC, created_at DESC LIMIT 20""").fetchall()
     con.close()
-    return cfg, snaps, works, hits, hot, ins
+    return cfg, snaps, works, hits, hot, ins, topics
 
 
 def _work_rows(ws, n=30):
@@ -85,6 +91,10 @@ def _card(a, s, hist, ws, kind="own"):
               f'<th class="num">点赞</th><th class="num">评论</th><th class="num">分享</th>'
               f'</tr></thead><tbody>{_work_rows(ws) or "<tr><td colspan=5>无</td></tr>"}</tbody></table></details>')
     tag = "对标" if kind == "rival" else PLATFORM_LABEL.get(a["platform"], a["platform"])
+    snap_date = s.get("snap_date") or ""
+    stale = snap_date != datetime.now().strftime("%Y-%m-%d")
+    date_html = (f'<span class="stale">数据 {esc(snap_date)}（非当日）</span>' if stale
+                 else f'<span>数据 {esc(snap_date)}</span>')
     return (f'<div class="card {"rival" if kind == "rival" else ""}">'
             f'<div class="cname">{esc(a["name"])}<span class="plat">{tag}</span></div>'
             f'<div class="muted">{esc(a.get("owner"))} · {esc(a.get("role"))}'
@@ -94,7 +104,7 @@ def _card(a, s, hist, ws, kind="own"):
             f'<div><span class="mv">{fmt(s["total_likes"])}</span><span class="mk">总获赞</span></div>'
             f'<div><span class="mv">{fmt(s["works_count"])}</span><span class="mk">作品数</span></div>'
             f'</div>'
-            f'<div class="trend">粉丝趋势 {sparkline(hist)}</div>{detail}</div>')
+            f'<div class="trend">{date_html} · 粉丝趋势 {sparkline(hist)}</div>{detail}</div>')
 
 
 def platform_section(cfg, latest, by_acct, works_by, platform, kind="own"):
@@ -102,12 +112,14 @@ def platform_section(cfg, latest, by_acct, works_by, platform, kind="own"):
     if not plat_accts:
         return ""
     label = PLATFORM_LABEL.get(platform, platform) + ("（对标）" if kind == "rival" else "")
-    active = [a for a in plat_accts if a["id"] in latest]
+    # 已停用（enabled=0）的号不计入已接入，即使库里还有历史快照
+    active = [a for a in plat_accts if a["id"] in latest and a.get("enabled")]
 
     if not active:
         reason = plat_accts[0].get("note") or "未开启采集"
         if platform == "xiaohongshu":
-            reason = "小红书需登录态，未配置 cookie 或本次未取到"
+            reason = ("小红书改走 RedFox API（collect_redfox.py）；无数据通常为优质库未收录（错误码 3203），"
+                      "可申请广域库或改用创作者中心导出校准")
         elif platform == "channels":
             reason = CHANNELS_NOTE
         cards = "".join(
@@ -247,6 +259,36 @@ def hot_section(hot):
     return f'<section><h2>平台热搜词 <span class="badge">{len(hot)} 条</span></h2><div class="hotcols">{"".join(cols)}</div></section>'
 
 
+def topics_section(topics, cfg):
+    """选题池：insight.topics 生成，按评分降序展示。"""
+    if not topics:
+        return ('<section><h2>选题池 <span class="badge off">暂无</span></h2>'
+                '<p class="reason">运行 python -m insight.topics 生成（需 LLM 可用）</p></section>')
+    amap = {a["id"]: a for a in cfg}
+    cards = []
+    for idx, t in enumerate(topics, 1):
+        a = amap.get(t["account_id"]) or {}
+        plat = PLATFORM_LABEL.get(t["platform"], t["platform"] or "")
+        acct = a.get("name") or t["account_id"] or "—"
+        owner = a.get("owner") or ""
+        score = t["score"] or 0
+        cards.append(
+            f'<div class="topic">'
+            f'<div class="thead"><span class="tno">#{idx}</span>'
+            f'<span class="tscore">{score:.0f}</span></div>'
+            f'<div class="ttitle">{esc(t["title"])}</div>'
+            f'<div class="tmeta">{esc(plat)} · {esc(acct)}'
+            + (f' · {esc(owner)}' if owner else '') + '</div>'
+            f'<div class="thook"><b>钩子</b>{esc(t["hook"] or "—")}</div>'
+            f'<div class="tout"><b>结构</b>{esc(t["outline"] or "—")}</div>'
+            f'<details><summary>证据链</summary>'
+            f'<div class="insbody">{esc(t["evidence"] or "—")}</div></details>'
+            f'</div>')
+    return (f'<section><h2>选题池 <span class="badge">{len(topics)} 条</span>'
+            f'<span class="muted">按评分排序 · 来源 insight.topics</span></h2>'
+            f'<div class="grid topics">{"".join(cards)}</div></section>')
+
+
 def insight_section(ins):
     if not ins:
         return ""
@@ -288,6 +330,7 @@ section{padding-bottom:12px}
 .metrics{display:flex;gap:18px;margin:12px 0 6px}
 .mv{font-size:19px;font-weight:700;display:block} .mk{font-size:11px;color:#8a97b1}
 .trend{font-size:11px;color:#8a97b1;display:flex;align-items:center;gap:8px;margin-top:6px}
+.trend .stale{color:#e0a458}
 details{margin-top:10px} summary{cursor:pointer;font-size:12px;color:#9db4e8}
 table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
 th,td{text-align:left;padding:5px 6px;border-bottom:1px solid #1c2740}
@@ -303,12 +346,23 @@ th{color:#8a97b1;font-weight:500}
 .rk{color:#6b7ba0;min-width:18px;text-align:right}
 .insbody{background:#111726;border:1px solid #1c2740;border-radius:8px;padding:10px;margin-top:8px;
 font-size:12px;line-height:1.7;color:#c8d3e8;max-height:340px;overflow:auto}
+.topics{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+.topic{background:#141b2b;border:1px solid #1f2b45;border-radius:12px;padding:14px 16px}
+.thead{display:flex;justify-content:space-between;align-items:center}
+.tno{font-size:11px;color:#7d8db3}
+.tscore{font-size:12px;font-weight:700;color:#8fd18f;background:#1b2f24;border-radius:8px;padding:2px 8px}
+.ttitle{font-size:14px;font-weight:600;margin:6px 0 4px;line-height:1.4}
+.tmeta{font-size:11px;color:#8a97b1;margin-bottom:8px}
+.thook{font-size:12px;line-height:1.6;color:#e8ecf4;background:#111726;
+border-left:2px solid #4f7cff;padding:6px 8px;border-radius:4px;margin-bottom:6px}
+.thook b,.tout b{color:#8a97b1;font-weight:500;margin-right:6px}
+.tout{font-size:12px;line-height:1.6;color:#c8d3e8}
 footer{color:#5f6b86;font-size:11px;padding:18px 28px;border-top:1px solid #1c2740;margin-top:20px}
 """
 
 
 def build():
-    cfg, snaps, works, hits, hot, ins = load()
+    cfg, snaps, works, hits, hot, ins, topics = load()
     by_acct = {}
     for s in snaps:
         by_acct.setdefault(s["account_id"], []).append(dict(s))
@@ -317,8 +371,11 @@ def build():
         works_by.setdefault(w["account_id"], []).append(dict(w))
     latest = {aid: rows[-1] for aid, rows in by_acct.items() if rows}
 
-    own_ids = [a["id"] for a in cfg if a["kind"] == "own"]
+    # 合计与"已接入"只统计启用中的账号；分母用全部账号，便于看出未接入缺口
+    own_live = [a for a in cfg if a["kind"] == "own" and a.get("enabled")]
+    own_all = [a["id"] for a in cfg if a["kind"] == "own"]
     rival_ids = [a["id"] for a in cfg if a["kind"] == "rival"]
+    own_ids = [a["id"] for a in own_live]
     tf = sum(latest[i]["followers"] or 0 for i in own_ids if i in latest)
     tl = sum(latest[i]["total_likes"] or 0 for i in own_ids if i in latest)
     tw = sum(latest[i]["works_count"] or 0 for i in own_ids if i in latest)
@@ -327,7 +384,7 @@ def build():
     sections = []
     sections.append(sales_section())
     sections.append('<section><h2>自有账号矩阵 <span class="badge">'
-                    f'{len([i for i in own_ids if i in latest])} / {len(own_ids)} 已接入</span></h2></section>')
+                    f'{len([i for i in own_ids if i in latest])} / {len(own_all)} 已接入</span></h2></section>')
     for p in PLATFORM_ORDER:
         sections.append(platform_section(cfg, latest, by_acct, works_by, p, "own"))
     if rival_ids:
@@ -337,6 +394,7 @@ def build():
             sections.append(platform_section(cfg, latest, by_acct, works_by, p, "rival"))
     sections.append(hits_section(hits))
     sections.append(hot_section(hot))
+    sections.append(topics_section(topics, cfg))
     sections.append(insight_section(ins))
 
     gen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -360,8 +418,9 @@ def build():
 <div><div class="k">账号（自有/对标）</div><div class="v">{len(own_ids)} / {len(rival_ids)}</div></div>
 </div>
 {"".join(sections)}
-<footer>采集口径：抖音/小红书=前台公开数据（粉丝/总获赞/作品数/作品点赞）；播放量与单条评论/分享平台前台多不公开故可能为空。
-对标素材来自监控关键词搜索结果（search_hits），热搜来自微博/百度/抖音热榜。视频号无网页前台，未接入。</footer>
+<footer>采集口径：抖音=前台公开数据（免登录）；小红书=RedFox API 账号级指标（粉丝/获赞与收藏/作品数），
+作品明细因优质库未收录暂缺，且为第三方缓存口径（较平台实时滞后数日）；视频号=RedFox 视频号库当前未收录矩阵账号，暂无数据。
+对标素材来自监控关键词搜索结果（search_hits），热搜来自微博/百度/抖音热榜。</footer>
 </body></html>"""
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)

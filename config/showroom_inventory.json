@@ -1,0 +1,265 @@
+{
+  "_comment": "阳光展厅可拍产品清单（脚本模块选品边界）。confirmed=展厅主推清单/知识库明确证据/用户指定；pending=清单注明未到展厅；candidate=有库存线索但未确认在展厅，必须人工指定。价格不进入脚本。",
+  "location": {
+    "name": "苏州阳光大厦展厅",
+    "address": "苏州市姑苏区西环路717号运智路阳光大厦911室",
+    "note": "拍摄默认地点；心悦在阳光大厦场地（上午直播/拍摄）。2026-10-20 用户确认。"
+  },
+  "presenters": {
+    "oral": ["翔哥"],
+    "brand": ["心悦", "小冯"],
+    "personal": ["小冯"]
+  },
+  "sources": [
+    {
+      "path": "D:\\BaiduSyncdisk\\12 抖店\\展厅要推的产品.txt",
+      "title": "展厅要推的产品",
+      "content": "助行器选朋友2、NIP；电动轮椅选P10和P21；移位机选105L和HY201-1A；便捷式移位机HY303；手动轮椅选A3和希维尔800元的那款（还没到展厅）。",
+      "note": "2026-03-16 文件；用户 2026-10-20 指定为阳光展厅主推清单"
+    },
+    {
+      "path": "D:\\BaiduSyncdisk\\8 本地推素材\\库存.txt",
+      "title": "佳康顺轮椅租赁本地推库存",
+      "note": "2026-05-27 库存口径：865-20、EY-15、EY500-16、P20C、EY-18、P10旅行、P15、EY-05、EY07、X3全碳、P11全碳、P16、P16L、EY-19 等"
+    },
+    {
+      "path": "知识库",
+      "title": "F2Q/HS180P 展厅实拍与阳光直播间样品",
+      "note": "F2Q 红色10A 为阳光直播间样品；HS180P 三张图是展厅实拍，背景可见护理床"
+    },
+    {
+      "path": "用户指定",
+      "title": "小福车",
+      "note": "2026-10-20 用户明确加入阳光展厅可拍清单"
+    }
+  ],
+  "confirmed": [
+    {
+      "model": "F2Q",
+      "name": "F2Q 四轮折叠代步车",
+      "category": "老年代步车",
+      "aliases": ["F2Q", "MS160"],
+      "doc_id": "jks-product/F2Q-参数与卖点-905282.md",
+      "evidence": [
+        "sop/下单：客户「佳康顺阳光直播间样品」，订单 F2Q 代步车红色 10A 一台",
+        "marketing 展厅实拍/发布文案多次出现 F2Q"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "model": "HS180P",
+      "name": "HS180P 折叠代步车",
+      "category": "老年代步车",
+      "aliases": ["HS180P"],
+      "doc_id": "jks-product/HS180P-参数与卖点-d0465f.md",
+      "evidence": [
+        "jks-product HS180P 参数与卖点：3 张图为展厅实拍，背景可见护理床、饮水机",
+        "2025 内销目录在售"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "model": "小福车",
+      "name": "小福车（单脚助行车）",
+      "category": "助行器",
+      "aliases": ["小福车", "单脚助行车", "骨折助行车"],
+      "doc_id": "common/小福车配文-4b276c.md",
+      "evidence": [
+        "2026-10-20 用户明确指定加入阳光展厅可拍清单",
+        "知识库：骨折康复助行产品，跪式滑行、PU 坐垫、四轮弹簧减震、可翻转踏板"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "model": "护理床",
+      "name": "护理床（具体型号待现场确认）",
+      "category": "居家康复辅助",
+      "aliases": ["护理床", "电动护理床"],
+      "doc_id": null,
+      "evidence": [
+        "HS180P 展厅实拍图背景可见护理床",
+        "产品目录：FH-B-101 / HB300 多功能电动护理床"
+      ],
+      "status": "confirmed",
+      "note": "不写具体型号和参数，除非现场确认型号并核对说明书"
+    },
+    {
+      "model": "朋友2",
+      "name": "朋友2 / HR101B 助行器",
+      "category": "助行器",
+      "aliases": ["朋友2", "HR101B", "KR101B"],
+      "doc_id": null,
+      "evidence": [
+        "展厅要推的产品.txt：助行器选朋友2、NIP",
+        "翔哥口播诊断：朋友2在展厅内容中出现"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "model": "NIP",
+      "name": "NIP 助行器（HR008NIP / BC2）",
+      "category": "助行器",
+      "aliases": ["NIP", "HR008NIP", "BC2"],
+      "doc_id": null,
+      "evidence": ["展厅要推的产品.txt：助行器选朋友2、NIP"],
+      "status": "confirmed"
+    },
+    {
+      "model": "P10",
+      "name": "P10 碳纤维轻便折叠电动轮椅",
+      "category": "电动轮椅",
+      "aliases": ["P10", "P10旅行"],
+      "doc_id": null,
+      "evidence": [
+        "展厅要推的产品.txt：电动轮椅选P10和P21",
+        "租赁库存清单：P10旅行 10+台"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "model": "P21",
+      "name": "P21 电动轮椅（清单原文；目录对应 P11/WP21，待确认）",
+      "category": "电动轮椅",
+      "aliases": ["P21", "P11", "WP21", "HP200", "HP205"],
+      "doc_id": null,
+      "evidence": ["展厅要推的产品.txt：电动轮椅选P10和P21"],
+      "status": "confirmed",
+      "needs_confirmation": true,
+      "model_note": "清单写 P21；产品目录里没有 P21，最接近的是 P11/WP21。写具体型号前必须让用户确认对应关系。"
+    },
+    {
+      "model": "105L",
+      "name": "HY105L 铝合金轻便移位机",
+      "category": "移位机",
+      "aliases": ["105L", "HY105L", "HY105L-01A", "HY105L-01B"],
+      "doc_id": null,
+      "evidence": ["展厅要推的产品.txt：移位机选105L和HY201-1A"],
+      "status": "confirmed"
+    },
+    {
+      "model": "HY201-1A",
+      "name": "HY201-01A 电动移位机",
+      "category": "移位机",
+      "aliases": ["HY201-1A", "HY201-01A"],
+      "doc_id": null,
+      "evidence": ["展厅要推的产品.txt：移位机选105L和HY201-1A"],
+      "status": "confirmed"
+    },
+    {
+      "model": "HY303",
+      "name": "HY303 便携式移位机",
+      "category": "移位机",
+      "aliases": ["HY303"],
+      "doc_id": null,
+      "evidence": ["展厅要推的产品.txt：便捷式移位机HY303"],
+      "status": "confirmed"
+    },
+    {
+      "model": "A3",
+      "name": "A3 镁铝合金轻便手动轮椅",
+      "category": "手动轮椅",
+      "aliases": ["A3"],
+      "doc_id": null,
+      "evidence": ["展厅要推的产品.txt：手动轮椅选A3"],
+      "status": "confirmed"
+    }
+  ],
+  "pending": [
+    {
+      "model": "希维尔",
+      "name": "希维尔手动轮椅（清单原文 800 元那款）",
+      "category": "手动轮椅",
+      "aliases": ["希维尔", "XFY"],
+      "doc_id": null,
+      "evidence": [
+        "展厅要推的产品.txt：希维尔800元那款（还没到展厅）",
+        "展厅接待话术：希维尔手动轮椅约 900 元，展厅暂时没样机"
+      ],
+      "status": "pending_arrival",
+      "note": "未到展厅，不得写入可拍摄脚本；等样机到展厅后再启用。"
+    }
+  ],
+  "candidates": [
+    {
+      "model": "X3",
+      "name": "X3 碳纤维电动轮椅（WP19/HP202）",
+      "category": "电动轮椅",
+      "aliases": ["X3", "WP19", "HP202"],
+      "doc_id": "jks-product/X3碳纤维电动轮椅-参数与卖点-4310ca.md",
+      "evidence": ["2026-05-27 租赁库存清单：X3全碳 20+台", "营销素材/高端款"],
+      "status": "candidate"
+    },
+    {
+      "model": "P11",
+      "name": "P11 全碳纤维电动轮椅",
+      "category": "电动轮椅",
+      "aliases": ["P11", "WP21", "HP200", "HP205", "P11全碳"],
+      "doc_id": null,
+      "evidence": ["2026-05-27 租赁库存清单：P11全碳 10+台"],
+      "status": "candidate"
+    },
+    {
+      "model": "P16L",
+      "name": "P16L 镁铝合金电动轮椅",
+      "category": "电动轮椅",
+      "aliases": ["P16L"],
+      "doc_id": null,
+      "evidence": ["租赁库存清单：P16L 20+台", "翔哥情感口播样本提到展厅 P16L"],
+      "status": "candidate"
+    },
+    {
+      "model": "P20C",
+      "name": "P20C 电动轮椅",
+      "category": "电动轮椅",
+      "aliases": ["P20C"],
+      "doc_id": null,
+      "evidence": ["租赁库存清单：P20C 20+台"],
+      "status": "candidate"
+    },
+    {
+      "model": "P15",
+      "name": "P15 镁合金轻量化电动轮椅",
+      "category": "电动轮椅",
+      "aliases": ["P15"],
+      "doc_id": null,
+      "evidence": ["租赁库存清单：P15 20+台"],
+      "status": "candidate"
+    },
+    {
+      "model": "EY-18",
+      "name": "EY-18 电动轮椅",
+      "category": "电动轮椅",
+      "aliases": ["EY-18", "EY18"],
+      "doc_id": null,
+      "evidence": ["租赁库存清单：EY-18 7台"],
+      "status": "candidate"
+    },
+    {
+      "model": "865-20",
+      "name": "865-20 轻便折叠铝合金手动轮椅",
+      "category": "手动轮椅",
+      "aliases": ["865-20"],
+      "doc_id": null,
+      "evidence": ["租赁库存清单：865-20 40+台", "上海养老展产品明细"],
+      "status": "candidate"
+    },
+    {
+      "model": "天轨移位机",
+      "name": "CH100 天轨移位机",
+      "category": "移位机",
+      "aliases": ["CH100", "天轨移位机"],
+      "doc_id": null,
+      "evidence": ["翔哥口播样本提到天轨移位机", "上海养老展产品明细：龙门天轨CH100"],
+      "status": "candidate"
+    }
+  ],
+  "rules": {
+    "auto_select_scope": "confirmed",
+    "candidate_requires_override": true,
+    "pending_never_auto_select": true,
+    "write_model_only_if_confirmed": true,
+    "warn_on_needs_confirmation": true,
+    "no_price_in_script": true,
+    "note": "知识库没有独立「阳光展厅库存盘点」文档；本清单合并了本地「展厅要推的产品.txt」、租赁库存清单、知识库展厅实拍/订单和用户指定小福车。P21 与希维尔存在型号/到店不确定性，脚本写具体型号前必须确认。"
+  }
+}

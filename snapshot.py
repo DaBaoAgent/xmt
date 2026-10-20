@@ -1,7 +1,7 @@
 """每日编排 v2（cron 入口）：采集 → 分析 → 洞察 → 看板。
 
 阶段：
-  1. 自有账号采集（抖音免登录 / 小红书带 cookie）
+  1. 自有账号采集（抖音免登录 / 小红书+视频号走 RedFox API）
   2. 对标账号主页采集（config/rivals.json 里填了 url / xhs_id 的号）
   3. 关键词搜索（监控词 → search_hits，找对标 + 找选题素材）
   4. 平台热搜（抖音 / 微博 / 百度）
@@ -60,9 +60,18 @@ def main():
     def own():
         import collect_douyin
         import collect_xhs
+        import collect_redfox
         a = collect_douyin.run(target=TARGET, headed=args.headed)
+        # 小红书 / 视频号：RedFox API 通道（cookie + Playwright 方案已于 2026-10-19 停用）
+        if collect_redfox.available():
+            rx = collect_redfox.run(platform="xiaohongshu", target=TARGET)
+            rs = collect_redfox.run(platform="channels", target=TARGET)
+        else:
+            rx = rs = (0, 0)
+        # 兜底：若日后恢复 cookie 采集，仍然执行
         b = collect_xhs.run(target=TARGET, headed=args.headed) if collect_xhs.available() else (0, 0)
-        return f"抖音 {a[0]}/{a[1]}，小红书 {b[0]}/{b[1]}"
+        return (f"抖音 {a[0]}/{a[1]}，小红书 {rx[0]}/{rx[1]}（RedFox），"
+                f"视频号 {rs[0]}/{rs[1]}（RedFox）")
     _step("自有账号采集", own, results)
 
     # 2-4. 对标 / 关键词 / 热搜（耗时，quick 模式跳过）

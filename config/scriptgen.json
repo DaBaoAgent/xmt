@@ -1,0 +1,50 @@
+{
+  "_comment": "拍摄脚本模块配置。路径相对项目根；密钥全部走环境变量，不写这里。",
+  "paths": {
+    "knowledge_dir": "knowledge",
+    "reference_dir": "knowledge/reference",
+    "scripts_dir": "data/scriptgen/scripts",
+    "batch_dir": "data/scriptgen/batches",
+    "tmp_dir": "data/tmp"
+  },
+  "redfox": {
+    "poll_interval_sec": 3,
+    "transcript_timeout_sec": 180,
+    "submit_retries": 2,
+    "batch_call_threshold": 50,
+    "estimated_calls_per_link": 3
+  },
+  "asr": {
+    "enabled": true,
+    "model": "medium",
+    "device": "auto",
+    "compute_type": "int8",
+    "language": "zh",
+    "keep_video": false
+  },
+  "company_kb": {
+    "url": "http://192.168.1.79:8788/mcp",
+    "product_kb": "jks-product",
+    "product_kb_fallback": ["common"],
+    "sync_kb": "marketing",
+    "timeout_sec": 30,
+    "max_chars": 6000
+  },
+  "selection": {
+    "account_min_score": 0.72,
+    "account_min_margin": 0.15,
+    "product_min_score": 0.7
+  },
+  "llm": {
+    "enabled": true,
+    "temperature": 0.7,
+    "max_tokens": 3200
+  },
+  "quality": {
+    "overlap_ngram": 10,
+    "max_overlap_ratio": 0.12,
+    "auto_fix_compliance": true,
+    "flag_numeric_claims": true,
+    "numeric_claim_allow_units": ["kg", "公斤", "km", "公里", "AH", "W", "瓦", "年", "度", "%"]
+  }
+}
