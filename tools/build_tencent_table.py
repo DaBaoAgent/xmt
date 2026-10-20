@@ -1,9 +1,10 @@
-"""把 sg_scripts 的定稿整理成「对标 | 改稿」左右对照表的数据。
+"""把 sg_scripts 的定稿整理成「对标 | 改稿」左右对照表。
 
-供腾讯文档表格导入用：每行一条稿，左列对标、右列改稿。
+供腾讯文档表格导入，或生成本地 HTML / markdown 备用版。
 用法：
-  python tools/build_tencent_table.py          # 打印 JSON（预览）
-  python tools/build_tencent_table.py --md     # 打印 markdown（本地备用版）
+  python tools/build_tencent_table.py            # 打印 JSON（预览 / 供腾讯文档导入）
+  python tools/build_tencent_table.py --md       # 输出 markdown
+  python tools/build_tencent_table.py --html     # 生成 out/对标对照表.html（双击浏览器打开）
 """
 import os
 import re
@@ -203,8 +204,178 @@ def _compliance_text(raw):
     return "\n".join(lines)
 
 
+HTML_TMPL = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对标 vs 改稿 · 左右对照表</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --ink2:#5d6672; --line:#e2e5ea;
+    --left:#fff8f0; --leftline:#f0d9bd; --right:#f0f7ff; --rightline:#c5dcf5;
+    --ok:#0a7d3e; --okbg:#e8f6ed; --warn:#9a6100; --warnbg:#fff5e0;
+    --accent:#1f5fd0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:26px 20px 60px;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+    line-height:1.6;font-size:14px}
+  .wrap{max-width:1500px;margin:0 auto}
+  h1{font-size:23px;margin:0 0 4px;letter-spacing:-.3px}
+  .sub{color:var(--ink2);font-size:13px;margin-bottom:8px}
+  .tip{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;margin:12px 0 20px;color:var(--ink2)}
+  .tip b{color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    margin-bottom:20px;overflow:hidden}
+  .chead{display:flex;align-items:flex-start;gap:12px;padding:15px 20px;
+    border-bottom:1px solid var(--line);background:#fbfcfd}
+  .no{flex:none;width:30px;height:30px;border-radius:8px;background:var(--accent);
+    color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;
+    justify-content:center}
+  .ctitle{font-size:17px;font-weight:600;line-height:1.4}
+  .cmeta{font-size:12.5px;color:var(--ink2);margin-top:3px}
+  .pill{display:inline-block;padding:1.5px 8px;border-radius:999px;font-size:11.5px;
+    font-weight:600;white-space:nowrap}
+  .p-ok{background:var(--okbg);color:var(--ok)}
+  .p-info{background:#eaf1fd;color:var(--accent)}
+  .cols{display:grid;grid-template-columns:1fr 1fr}
+  .col{padding:16px 20px;min-width:0}
+  .col.left{background:var(--left);border-right:1px solid var(--line)}
+  .col.right{background:var(--right)}
+  .coltag{font-size:11.5px;font-weight:700;letter-spacing:.06em;
+    color:var(--ink2);margin-bottom:11px;display:flex;align-items:center;gap:6px}
+  .coltag:before{content:"";width:3px;height:12px;border-radius:2px;background:var(--ink2)}
+  .col.left .coltag:before{background:#c9873f}
+  .col.right .coltag:before{background:var(--accent)}
+  h4{font-size:12px;color:var(--ink2);font-weight:700;margin:14px 0 6px;
+    letter-spacing:.03em}
+  h4:first-of-type{margin-top:0}
+  .body{white-space:pre-wrap;word-break:break-word;font-size:13.5px;line-height:1.75}
+  .script{background:#fff;border:1px solid var(--rightline);border-radius:9px;
+    padding:13px 15px;white-space:pre-wrap;word-break:break-word;
+    font-size:14.5px;line-height:1.95}
+  a.vlink{display:inline-flex;align-items:center;gap:6px;background:#fff;
+    border:1px solid var(--leftline);border-radius:8px;padding:7px 12px;
+    color:#b1620e;text-decoration:none;font-size:13px;font-weight:600}
+  a.vlink:hover{background:#fff3e2}
+  details{margin-top:8px}
+  summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--accent);
+    padding:5px 0;user-select:none}
+  summary:hover{text-decoration:underline}
+  details[open] summary{margin-bottom:7px}
+  .detail{background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 13px;
+    font-size:12.5px;line-height:1.7;max-height:460px;overflow:auto}
+  .kvlist{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 13px;
+    font-size:12.5px;line-height:1.75}
+  .kvlist div+div{margin-top:3px}
+  .badge{display:inline-block;background:var(--okbg);color:var(--ok);font-weight:700;
+    padding:1px 7px;border-radius:5px;margin-right:5px}
+  .foot{color:var(--ink2);font-size:12.5px;text-align:center;margin-top:26px}
+  .empty{color:var(--ink2);font-size:13px}
+  @media(max-width:1000px){.cols{grid-template-columns:1fr}.col.left{border-right:none;
+    border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>对标 vs 改稿 · 左右对照表</h1>
+  <div class="sub">共 __N__ 条 ｜ 生成于 __TIME__ ｜ 来源：xmt scriptgen 定稿库</div>
+  <div class="tip">
+    <b>用法</b>：点左侧「▶ 看原片」跳到视频 → 对着右侧逐字稿看结构怎么改的 → 右边是可直接拿去拍的版本。
+    对标原片有价格和数字的，<b>一个都不能照抄</b>，只能学它的结构。
+  </div>
+  __CARDS__
+  <div class="foot">由 tools/build_tencent_table.py 自动生成 ｜ 出新稿后重跑即可刷新</div>
+</div>
+</body>
+</html>
+"""
+
+
+def _esc(s):
+    return (str(s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+
+def _kv_html(text):
+    """把「平台：xxx」这类行渲染成小列表。"""
+    lines = [x.strip() for x in str(text or "").splitlines() if x.strip()]
+    if not lines:
+        return '<div class="empty">（无）</div>'
+    return '<div class="kvlist">' + "".join(
+        "<div>%s</div>" % _esc(x) for x in lines) + "</div>"
+
+
+def _card_html(r):
+    url = str(r.get("对标链接（点击看原片）") or "")
+    url_html = ('<a class="vlink" href="%s" target="_blank" rel="noopener">▶ 看原片</a>'
+                % _esc(url)) if url.startswith("http") else '<div class="empty">（无链接）</div>'
+    structure = str(r.get("对标结构拆解") or "")
+    tips = str(r.get("拍摄提示") or "")
+    comp = str(r.get("合规自检") or "")
+    passed = "通过" in comp
+    meta_bits = [str(r.get("账号｜出镜") or ""), str(r.get("时长 / 字数") or ""),
+                 str(r.get("状态") or "")]
+    return f"""
+<div class="card">
+  <div class="chead">
+    <div class="no">{r['序号']}</div>
+    <div>
+      <div class="ctitle">{_esc(r.get('标题'))}</div>
+      <div class="cmeta">{_esc(' ｜ '.join(b for b in meta_bits if b))}</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      {url_html}
+      <h4>基本信息</h4>
+      {_kv_html(r.get('对标信息'))}
+      <h4>结构拆解</h4>
+      <details{' open' if len(structure) < 700 else ''}>
+        <summary>{'收起' if len(structure) < 700 else '展开看完整拆解（%d 字）' % len(structure)}</summary>
+        <div class="detail">{_esc(structure)}</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">{_esc(r.get('我的逐字稿'))}</div>
+      <h4>拍摄提示</h4>
+      <div class="body">{_esc(tips)}</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">{'通过' if passed else '需处理'}</span>{_esc(comp)}</div>
+    </div>
+  </div>
+</div>"""
+
+
+def write_html(rows, path=None):
+    from datetime import datetime
+    cards = "\n".join(_card_html(r) for r in rows)
+    if not rows:
+        cards = '<div class="card"><div class="coltag">暂无定稿</div>' \
+                '<p class="empty">给我对标链接并说明是哪个号，出稿后会自动出现在这里。</p></div>'
+    html = (HTML_TMPL
+            .replace("__CARDS__", cards)
+            .replace("__N__", str(len(rows)))
+            .replace("__TIME__", datetime.now().strftime("%Y-%m-%d %H:%M")))
+    out = path or os.path.join(ROOT, "out", "对标对照表.html")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with open(out, "w", encoding="utf-8") as f:
+        f.write(html)
+    return out
+
+
 def main():
     rows = build()
+    if "--html" in sys.argv:
+        p = write_html(rows)
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        print("已生成：%s（%d 条）" % (p, len(rows)))
+        return
     if "--md" in sys.argv:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         print("# 对标 vs 改稿 对照表\n")
