@@ -13,11 +13,21 @@ from . import personas as personas_mod
 # ---------------- 目标时长 ----------------
 
 def target_duration(persona, benchmark_duration):
+    """目标时长：**落在人设区间内**，对标时长只做区间内的微调。
+
+    规则：
+    - 对标时长落在人设区间内 → 直接用对标时长
+    - 对标时长高于人设上限 → 取人设上限
+    - 对标时长低于人设下限 → 取人设下限
+    （硬性保证结果在人设区间内：过短的对标做出来会比人设还短，
+     过长的对标会拖到人设时长外，都不合适。）
+    """
     d = persona.get("duration") or {}
     lo = float(d.get("min") or 45)
     hi = float(d.get("max") or 60)
     if benchmark_duration:
-        return round(max(lo * 0.8, min(hi * 1.2, float(benchmark_duration))), 1)
+        b = float(benchmark_duration)
+        return round(max(lo, min(hi, b)), 1)
     return round((lo + hi) / 2.0, 1)
 
 
