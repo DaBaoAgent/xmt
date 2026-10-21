@@ -1,10 +1,13 @@
-r"""把库里所有稿子导出成「一篇一个单独 txt」，放在 稿子/ 目录。
+r"""把库里所有稿子导出成「一篇一个单独 txt」，放在 稿子/{账号}/ 目录。
 
 用法：
   .venv/Scripts/python.exe tools/export_standalone.py
 
 产出：
-  D:\kaifa\xmt\稿子\001_账号_标题.txt ... （一篇一个，跟 out/ 的 Word 同序号）
+  D:\kaifa\xmt\稿子\口播号\001_标题.txt
+  D:\kaifa\xmt\稿子\品牌号\001_标题.txt
+  D:\kaifa\xmt\稿子\个人号\001_标题.txt
+（序号跟 out/ 的 Word 全局序号一致，账号由文件夹标明，文件名不再重复账号段）
 文件内容：标题 + 账号/字数/时长 + 台词正文（单人口播无前缀，双人稿带「说话人：」）
 """
 import os
@@ -21,6 +24,7 @@ from scriptgen import pipeline  # noqa: E402
 
 DB = os.path.join(ROOT, "data", "xmt.db")
 OUT_DIR = os.path.join(ROOT, "稿子")
+ACCOUNT_DIRS = ("口播号", "品牌号", "个人号")
 
 # 出稿顺序：跟 out/*.docx 的文件序号保持一致
 ORDER = [
@@ -41,10 +45,19 @@ def main():
         "SELECT * FROM sg_scripts")}
     con.close()
 
-    # 清掉旧的（避免改了标题后残留）
+    # 清掉旧的：根下的 txt，以及三个账号子目录里的 txt
     for f in os.listdir(OUT_DIR):
-        if f.endswith(".txt"):
-            os.remove(os.path.join(OUT_DIR, f))
+        p = os.path.join(OUT_DIR, f)
+        if os.path.isfile(p) and f.endswith(".txt"):
+            os.remove(p)
+    for sub in ACCOUNT_DIRS:
+        d = os.path.join(OUT_DIR, sub)
+        if os.path.isdir(d):
+            for f in os.listdir(d):
+                if f.endswith(".txt"):
+                    os.remove(os.path.join(d, f))
+        else:
+            os.makedirs(d, exist_ok=True)
 
     n = 0
     for code in ORDER:
@@ -53,8 +66,9 @@ def main():
             print("跳过（库里没有）:", code)
             continue
         n += 1
-        name = "%03d_%s_%s.txt" % (n, r["account_label"], r["title"])
-        path = os.path.join(OUT_DIR, name)
+        sub = r["account_label"]          # 口播号 / 品牌号 / 个人号
+        name = "%03d_%s.txt" % (n, r["title"])
+        path = os.path.join(OUT_DIR, sub, name)
         with io.open(path, "w", encoding="utf-8") as f:
             f.write("%s\n" % r["title"])
             f.write("%s ｜ %d 字 / %.1f 秒\n" % (
@@ -62,7 +76,7 @@ def main():
             f.write("=" * 46 + "\n\n")
             f.write(r["body_md"])
             f.write("\n")
-        print(name)
+        print("%s\\%s" % (sub, name))
     print("\n共 %d 篇 → %s" % (n, OUT_DIR))
 
 
