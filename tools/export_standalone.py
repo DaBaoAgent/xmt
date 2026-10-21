@@ -66,6 +66,8 @@ def main():
         else:
             os.makedirs(d, exist_ok=True)
 
+    # 编号改为「账号内连续序号」：每个子文件夹从 001 开始，ORDER 定先后
+    seq = {sub: 0 for sub in ACCOUNT_DIRS}
     n = 0
     for code in ORDER:
         r = by.get(code)
@@ -74,7 +76,8 @@ def main():
             continue
         n += 1
         sub = r["account_label"]          # 口播号 / 品牌号 / 个人号
-        name = "%03d_%s.txt" % (n, r["title"])
+        seq[sub] = seq.get(sub, 0) + 1
+        name = "%03d_%s.txt" % (seq[sub], r["title"])
         path = os.path.join(OUT_DIR, sub, name)
         with io.open(path, "w", encoding="utf-8") as f:
             f.write("%s\n" % r["title"])
@@ -85,6 +88,8 @@ def main():
             f.write("\n")
         print("%s\\%s" % (sub, name))
     print("\n共 %d 篇 → %s" % (n, OUT_DIR))
+    for sub in ACCOUNT_DIRS:
+        print("  %s：%d 篇" % (sub, seq.get(sub, 0)))
 
 
 if __name__ == "__main__":
