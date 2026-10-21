@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""品牌号 069-072：小飞燕护理手推车，4 个完全不同的场景（单人口播·小冯）。
+"""个人号 069-072：小飞燕护理手推车，4 个完全不同的场景（单人口播·小冯）。
 
 形式：单人口播（用户已明确「我不要对话的」），约 95-110 字/篇，
 结尾落评论区互动，不加地址不写价格。
@@ -45,8 +45,8 @@ BATCH = [
         "带娃出来遛弯，这车坐着稳不稳？",
         "前轮是三百六十度万向的，原地就能调头。",
         "轮子是弹性实心轮，耐磨防滑，推行也顺当。",
-        "底座加宽轴距，过小坎儿不飘。",
-        "孩子坐累了，靠背还能放倒躺一会儿。",
+        "底座加宽轴距，过小坎儿也不飘。",
+        "孩子坐累了，靠背还能放倒躺一会儿，不用一直抱着。",
         "带娃出门的，评论区说说。",
     ]),
     ("SG-20261020-071", "带去看医生好不好搬", [
@@ -62,8 +62,8 @@ BATCH = [
         "万向前轮顺滑不卡顿，转弯不用使劲拧。",
         "实心轮推行顺畅，轮子不吃地面。",
         "底座加大加宽轴距，走起来不东倒西歪。",
-        "车架加厚碳钢，推着心里踏实。",
-        "家里谁天天推人遛弯的，评论区说说。",
+        "车架加厚碳钢，管壁加厚，承重也高，推着心里踏实。",
+        "家里谁天天推人遛弯的，评论区说说，我帮您参谋参谋。",
     ]),
 ]
 
@@ -110,7 +110,7 @@ def main():
                           (code,)).fetchone()
         if row:
             con.execute(
-                "UPDATE sg_scripts SET account_id='brand', account_label='品牌号', "
+                "UPDATE sg_scripts SET account_id='personal', account_label='个人号', "
                 "presenters_json=?, title=?, body_json=?, body_md=?, word_count=?, "
                 "estimated_seconds=?, target_seconds=?, shooting_tips_json=?, "
                 "compliance_json=?, product_model=?, product_scope=?, "
@@ -130,7 +130,7 @@ def main():
                 "word_count, estimated_seconds, target_seconds, version, "
                 "product_scope, notes) "
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (code, now, now, "待审", "brand", "品牌号",
+                (code, now, now, "待审", "personal", "个人号",
                  json.dumps(["小冯"], ensure_ascii=False), "douyin",
                  BENCH_KEY, BENCH_URL, "遇见这么能炫耀的你会怎么办？",
                  "小飞燕护理手推车", json.dumps([], ensure_ascii=False), title,
@@ -139,7 +139,7 @@ def main():
                  json.dumps({"disclaimer": DISCLAIMER}, ensure_ascii=False),
                  json.dumps(scan, ensure_ascii=False), json.dumps([], ensure_ascii=False),
                  wc, sec, target, 1, "型号",
-                 "小飞燕护理手推车，单人口播（用户明确不要对话版），"
+                 "小飞燕护理手推车，**个人号**（用户指定），单人口播（不要对话版），"
                  "四个完全不同的场景：吃饭/带娃/看病/长时间推行。"
                  "参数逐字回查本地详情页 Z:\\7 详情页\\35  小飞燕。"
                  "**是手推车，无电机无摇杆无刹车，稿里不写**。"))
