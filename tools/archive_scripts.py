@@ -139,7 +139,12 @@ def main():
 
 
 def sync_html():
-    """顺带刷新三个 HTML 对照表（同一套数据源，保证 TXT 与网页一致）。"""
+    """顺带刷新三个 HTML 对照表（同一套数据源，保证 TXT 与网页一致）。
+
+    输出到项目根的「对照表」目录（跟「稿子」并排，方便直接找）。
+    ⚠️ write_html() 的 rows 必须是 build_tencent_table.build() 返回的处理后数据
+    （中文键名：标题/对标链接/对标结构拆解…），不能直接传数据库行。
+    """
     try:
         import importlib.util
         spec = importlib.util.spec_from_file_location(
@@ -150,9 +155,10 @@ def sync_html():
         by_acc = {}
         for r in rows:
             by_acc.setdefault(r.get("_account_id") or "oral", []).append(r)
-        made = m.write_html(by_acc)
+        out_dir = os.path.join(ROOT, "对照表")
+        made = m.write_html(by_acc, out_dir=out_dir)
         print()
-        print("HTML 对照表 ->  out\\对标对照表\\")
+        print("HTML 对照表 ->  对照表\\")
         for fn, n in made:
             print("  %-30s %s" % (fn, ("%d 条" % n) if n >= 0 else "（入口页）"))
     except Exception as e:
