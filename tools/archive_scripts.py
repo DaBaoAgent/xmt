@@ -1,18 +1,18 @@
-"""把 sg_scripts 里的定稿按账号归档成三个 TXT 收集文档 + 三个 HTML 对照表。
+"""刷新 HTML 对照表（TXT 归档已由 export_standalone.py 接管，按账号分目录单独输出）。
 
 用法：
-  python tools/archive_scripts.py            # 全部刷新（TXT 归档 + HTML 对照表）
-  python tools/archive_scripts.py --txt      # 只刷 TXT
-  python tools/archive_scripts.py --html     # 只刷 HTML
+  python tools/archive_scripts.py            # 刷 HTML 对照表
+  python tools/archive_scripts.py --html     # 同上
 
 产物：
-  口播稿/口播稿-{翔哥号,品牌号,个人号}.txt   纯文本，方便复制到微信
-  out/对标对照表/index.html                 入口页，点卡片进各号文档
-  out/对标对照表/对标对照表-{号}.html        左右分栏：左对标，右改稿
+  对照表/index.html                 入口页，点卡片进各号文档
+  对照表/对标对照表-{号}.html        左右分栏：左对标，右改稿
+
+> 一篇一个的单独 txt 由 tools/export_standalone.py 生成到「稿子/{账号}/」，
+> 按账号分三个子目录，不再生成合并版 txt（口播稿/ 目录已废弃删除）。
 
 规则：
   - 只收 status in (待审, 已通过) 且有逐字稿的记录；失败/未定的不出稿不入档
-  - 按创建时间升序编号，序号连续；同 code 只保留最新版本
   - 每次运行都重建文件，不会重复堆叠
 """
 import os
@@ -23,7 +23,6 @@ from datetime import datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB = os.path.join(ROOT, "data", "xmt.db")
-OUT_DIR = os.path.join(ROOT, "口播稿")
 
 # 账号 id → (文件名, 标题, 出镜人标注)
 ACCOUNTS = {
@@ -112,30 +111,8 @@ def render(r, idx):
 
 
 def main():
-    rows = [r for r in load_rows()
-            if (r.get("status") or "") in ("待审", "已通过")
-            and (r.get("body_md") or "").strip()]
-    by_acc = {}
-    for r in rows:
-        by_acc.setdefault(r.get("account_id") or "oral", []).append(r)
-
-    os.makedirs(OUT_DIR, exist_ok=True)
-    for acc_id, (fname, title, present) in ACCOUNTS.items():
-        items = by_acc.get(acc_id) or []
-        blocks = []
-        for i, r in enumerate(items, 1):
-            b = render(r, i)
-            if b:
-                blocks.append(b)
-        body = HEADER.format(title=title, presenters=present)
-        if blocks:
-            body += SEP.join(blocks) + "\n"
-        else:
-            body += "（暂无定稿。给我对标链接并说明是哪个号，出稿后会自动归档到这里。）\n"
-        path = os.path.join(OUT_DIR, fname)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(body)
-        print("%-18s %d 篇  ->  口播稿\\%s" % (fname, len(blocks), fname))
+    """只刷 HTML 对照表（TXT 已由 export_standalone.py 接管）。"""
+    sync_html()
 
 
 def sync_html():
@@ -167,9 +144,4 @@ def sync_html():
 
 if __name__ == "__main__":
     args = set(sys.argv[1:])
-    if "--html" in args:
-        sync_html()
-    else:
-        main()
-        if "--txt" not in args:
-            sync_html()
+    sync_html()

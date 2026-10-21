@@ -211,11 +211,14 @@ scan = compliance.scan_script(body_text, {"disclaimer": disclaimer}, "", FACT_TE
 
 ## 产出清单
 
-改完一条稿，**一条命令刷全部**：
+改完一条稿，**两条命令刷全部**：
 
 ```bash
-.venv/Scripts/python.exe tools/archive_scripts.py
+.venv/Scripts/python.exe tools/export_standalone.py   # 一篇一个 txt → 稿子/{账号}/
+.venv/Scripts/python.exe tools/archive_scripts.py     # HTML 对照表 → 对照表/
 ```
+
+> 旧的合并版 txt（`口播稿/`）已废弃删除 —— 内容被 `稿子/{账号}/` 完全覆盖。
 
 产出四样：
 
@@ -224,7 +227,6 @@ scan = compliance.scan_script(body_text, {"disclaimer": disclaimer}, "", FACT_TE
 | `稿子/{账号}/00N_{标题}.txt` | **一篇一个单独 txt**，按账号分三个子目录 |
 | `out/00N_{账号}_{标题}.docx` | 提词打印版，给出镜的人念 |
 | `out/对标对照表/对标对照表-{号}.html` | 左右对照：左对标（可点开原片+结构拆解），右改稿 |
-| `口播稿/口播稿-{号}.txt` | 按账号合并的 txt（3 个文件，想一锅看时用） |
 | `data/scriptgen/batches/*.md` | 批次报告（含计费统计） |
 
 > 用户要求「帮我都单独放在外面吧」→ 单独文件在 `稿子/`，
