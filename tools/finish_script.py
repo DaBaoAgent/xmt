@@ -141,10 +141,11 @@ def quality_check(codes):
             print("  [区间] %s target=%.0fs 不在 %s 人设区间 %s-%ss（用户「简单一点」批次除外，确认是否有意）"
                   % (code, tgt, r["account_label"], lo, hi_s))
 
-    # 2. 全账号尾句查重
+    # 2. 全账号尾句查重（跳过已归档：用户用过并移进 1 已用 的稿不再占位置）
     lasts = {}
     for r in con.execute(
-            "SELECT code, title, account_label, body_md FROM sg_scripts ORDER BY id"):
+            "SELECT code, title, account_label, body_md FROM sg_scripts "
+            "WHERE (status IS NULL OR status <> '已归档') ORDER BY id"):
         lines = [x for x in (r["body_md"] or "").split("\n") if x.strip()]
         if not lines:
             continue
@@ -161,12 +162,14 @@ def quality_check(codes):
 
 
 def check_angles(model):
-    """列出某个型号已写的稿：标题 + 首句 + 尾句，出稿前防角度重复。"""
+    """列出某个型号已写的稿：标题 + 首句 + 尾句，出稿前防角度重复。
+    已归档（用过并移进 1 已用）的稿不计入——那些不会再用。"""
     con = sqlite3.connect(DB)
     con.row_factory = sqlite3.Row
     rows = con.execute(
         "SELECT code, account_label, title, body_md FROM sg_scripts "
-        "WHERE product_model LIKE ? ORDER BY id", ("%" + model + "%",)).fetchall()
+        "WHERE product_model LIKE ? AND (status IS NULL OR status <> '已归档') "
+        "ORDER BY id", ("%" + model + "%",)).fetchall()
     con.close()
     if not rows:
         print("没有找到 %s 的稿" % model)

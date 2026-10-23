@@ -62,6 +62,31 @@ def collect_archived():
     return archived
 
 
+def sync_archived_status(archived):
+    """把归档区（{账号}/1 已用/）里的稿在库里标成 status='已归档'，
+    并把不在归档区、但库标着「已归档」的稿恢复成 '待审'（用户移回来就自动恢复）。
+
+    这样对照表、尾句查重、角度查重都只看「还没用过的稿」，
+    已用过的稿不占位置、不干扰新稿的撞车检查。幂等。"""
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    rows = list(con.execute("SELECT code, account_label, title, status FROM sg_scripts"))
+    marked = restored = 0
+    for r in rows:
+        is_arch = (r["account_label"], r["title"]) in archived
+        if is_arch and r["status"] != "已归档":
+            con.execute("UPDATE sg_scripts SET status='已归档' WHERE code=?", (r["code"],))
+            marked += 1
+        elif not is_arch and r["status"] == "已归档":
+            con.execute("UPDATE sg_scripts SET status='待审' WHERE code=?", (r["code"],))
+            restored += 1
+    con.commit()
+    con.close()
+    if marked or restored:
+        print("库状态同步：标记已归档 %d 篇，恢复 %d 篇" % (marked, restored))
+    return marked, restored
+
+
 def main():
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -89,6 +114,7 @@ def main():
     archived = collect_archived()
     if archived:
         print("归档区（不导出到根目录）：%d 篇" % len(archived))
+    sync_archived_status(archived)
     seq = {sub: 0 for sub in ACCOUNT_DIRS}
     n = 0
     for code in load_order():

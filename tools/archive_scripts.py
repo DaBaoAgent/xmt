@@ -57,7 +57,10 @@ def load_rows():
     latest = {}
     for r in rows:
         latest[r["code"]] = r
-    return [latest[c] for c in sorted(latest, key=lambda c: (latest[c].get("created_at") or "", c))]
+    out = [latest[c] for c in sorted(latest, key=lambda c: (latest[c].get("created_at") or "", c))]
+    # 已归档（用户用过并移进 稿子/{账号}/1 已用/）的稿不再进对照表
+    out = [r for r in out if (r.get("status") or "") != "已归档"]
+    return out
 
 
 def render(r, idx):
