@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对标 vs 改稿 · 左右对照表</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --ink2:#5d6672; --line:#e2e5ea;
+    --left:#fff8f0; --leftline:#f0d9bd; --right:#f0f7ff; --rightline:#c5dcf5;
+    --ok:#0a7d3e; --okbg:#e8f6ed; --warn:#9a6100; --warnbg:#fff5e0;
+    --accent:#1f5fd0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:26px 20px 60px;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+    line-height:1.6;font-size:14px}
+  .wrap{max-width:1500px;margin:0 auto}
+  h1{font-size:23px;margin:0 0 4px;letter-spacing:-.3px}
+  .sub{color:var(--ink2);font-size:13px;margin-bottom:8px}
+  .tip{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;margin:12px 0 20px;color:var(--ink2)}
+  .tip b{color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    margin-bottom:20px;overflow:hidden}
+  .chead{display:flex;align-items:flex-start;gap:12px;padding:15px 20px;
+    border-bottom:1px solid var(--line);background:#fbfcfd}
+  .no{flex:none;width:30px;height:30px;border-radius:8px;background:var(--accent);
+    color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;
+    justify-content:center}
+  .ctitle{font-size:17px;font-weight:600;line-height:1.4}
+  .cmeta{font-size:12.5px;color:var(--ink2);margin-top:3px}
+  .pill{display:inline-block;padding:1.5px 8px;border-radius:999px;font-size:11.5px;
+    font-weight:600;white-space:nowrap}
+  .p-ok{background:var(--okbg);color:var(--ok)}
+  .p-info{background:#eaf1fd;color:var(--accent)}
+  .cols{display:grid;grid-template-columns:1fr 1fr}
+  .col{padding:16px 20px;min-width:0}
+  .col.left{background:var(--left);border-right:1px solid var(--line)}
+  .col.right{background:var(--right)}
+  .coltag{font-size:11.5px;font-weight:700;letter-spacing:.06em;
+    color:var(--ink2);margin-bottom:11px;display:flex;align-items:center;gap:6px}
+  .coltag:before{content:"";width:3px;height:12px;border-radius:2px;background:var(--ink2)}
+  .col.left .coltag:before{background:#c9873f}
+  .col.right .coltag:before{background:var(--accent)}
+  h4{font-size:12px;color:var(--ink2);font-weight:700;margin:14px 0 6px;
+    letter-spacing:.03em}
+  h4:first-of-type{margin-top:0}
+  .body{white-space:pre-wrap;word-break:break-word;font-size:13.5px;line-height:1.75}
+  .script{background:#fff;border:1px solid var(--rightline);border-radius:9px;
+    padding:13px 15px;white-space:pre-wrap;word-break:break-word;
+    font-size:14.5px;line-height:1.95}
+  a.vlink{display:inline-flex;align-items:center;gap:6px;background:#fff;
+    border:1px solid var(--leftline);border-radius:8px;padding:7px 12px;
+    color:#b1620e;text-decoration:none;font-size:13px;font-weight:600}
+  a.vlink:hover{background:#fff3e2}
+  details{margin-top:8px}
+  summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--accent);
+    padding:5px 0;user-select:none}
+  summary:hover{text-decoration:underline}
+  details[open] summary{margin-bottom:7px}
+  .detail{background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 13px;
+    font-size:12.5px;line-height:1.7;max-height:460px;overflow:auto}
+  .kvlist{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 13px;
+    font-size:12.5px;line-height:1.75}
+  .kvlist div+div{margin-top:3px}
+  .badge{display:inline-block;background:var(--okbg);color:var(--ok);font-weight:700;
+    padding:1px 7px;border-radius:5px;margin-right:5px}
+  .foot{color:var(--ink2);font-size:12.5px;text-align:center;margin-top:26px}
+  .empty{color:var(--ink2);font-size:13px}
+  a.acct{display:flex;align-items:center;gap:12px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:15px 20px;margin-bottom:14px;
+    text-decoration:none;color:inherit;transition:box-shadow .15s,border-color .15s}
+  a.acct:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(31,95,208,.12)}
+  a.acct .no{background:var(--accent)}
+  @media(max-width:1000px){.cols{grid-template-columns:1fr}.col.left{border-right:none;
+    border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>品牌号 · 对标 vs 改稿</h1>
+  <div class="sub">出镜：心悦 + 小冯 ｜ 形式：双人问答 ｜ 共 45 条定稿 ｜ 生成于 2026-10-23 13:59</div>
+  <div class="tip">
+    <b>用法</b>：点左侧「▶ 看原片」跳到视频 → 对着右侧逐字稿看结构怎么改的 → 右边是可直接拿去拍的版本。
+    对标原片有价格和数字的，<b>一个都不能照抄</b>，只能学它的结构。
+  </div>
+  
+<div class="card">
+  <div class="chead">
+    <div class="no">1</div>
+    <div>
+      <div class="ctitle">这车下陡坡，溜不溜</div>
+      <div class="cmeta">约 25.0 秒 ｜ 105 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-003 ｜ v27</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://weixin.qq.com/sph/AIBFSojo90" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：视频号</div><div>作者：皮皮熊电动轮椅</div><div>原时长：25.4 秒</div><div>【CTA】（无）你还是换个好点的车吧！ ｜ 暗示观众考虑购买自家电动轮椅</div></div>
+      <h4>结构拆解</h4>
+      <details>
+        <summary>展开看完整拆解（1100 字）</summary>
+        <div class="detail">- **钩子**：反常识 ｜ 谁让你坐我新车的？
+ - 为什么有效：以反问开场，引发观众好奇心，吸引观众继续观看
+- **受众**：有老年人出行需求，正在考虑为老人选择代步工具的人群
+- **主题/品类**：通过对比突出自家电动轮椅下坡控速、上陡坡轻松、过窄门灵活等优势 ｜ 电动轮椅
+- **结构**：
+ - 钩子（1m20s–1m23s）：以反问话语引起观众兴趣；作用：通过反常的询问引发观众好奇，引导观众继续看后续内容
+ - 展开（1.6s–4.3s）：提及对方车下陡坡可能摔倒，引出后续对比；作用：为后续突出自家轮椅下坡优势做铺垫
+ - 卖点1（4.8s–8.6s）：强调自家车下坡会智能控速，不会摔倒；作用：突出自家电动轮椅下坡安全的优势
+ - 卖点2（9.2s–10.3s）：以对方上不去陡坡，对比自己推妈妈上陡坡轻松，引出自家轮椅优势；作用：为突出自家轮椅上陡坡轻松做对比铺垫
+ - 卖点2（10.8s–15.3s）：强调自己推妈妈上陡坡轻松，暗示自家轮椅上陡坡容易；作用：展示自家电动轮椅上陡坡的优势
+ - 卖点3（16.2s–18.0s）：提出对方车开不过窄门的问题，引出自家轮椅优势；作用：为突出自家轮椅过窄门灵活做对比铺垫
+ - 卖点3（18.3s–21.0s）：强调自家车电机灵敏，能轻松过窄门；作用：突出自家电动轮椅过窄门灵活的优势
+ - 卖点3（21.2s–23.2s）：提及对方车磕磕绊绊撞门，再次对比；作用：进一步为突出自家轮椅过窄门优势做对比
+ - 高潮（23.6s–25.4s）：建议对方换个好点的车，暗示自家车是好选择；作用：通过建议引导观众考虑自家产品
+- **卖点顺序**：
+ 1. 下坡智能控速（证据：我这车下坡会智能控速，才不会摔呢。）
+ 2. 上陡坡轻松（证据：我两手一搭，推我妈上陡坡很轻松，你儿子推不动吧？）
+ 3. 过窄门灵活（证据：我这车啊，电机灵敏，轻松过。）
+- **CTA**：无 ｜ 你还是换个好点的车吧！ ｜ 映射：暗示观众考虑购买自家电动轮椅
+- **节奏**：时长 25.4s ｜ 分段 9 ｜ 平均 2.82s
+- **语感**：口语化、直接，通过对话形式呈现
+- **可学的结构**：
+ - 以反问开场引发好奇，接着通过对比突出产品多个优势，最后给出暗示性建议
+- **不要复刻**：
+ - “谁让你坐我新车的？”“我这车下坡会智能控速，才不会摔呢。”等原片原句，以及视频中对比的对话情境
+- **账号判断**：品牌号 ｜ 置信度 1.0 ｜ 用户指定账号
+- **选品判断**：F2Q ｜ 置信度 0.99 ｜ 用户指定型号</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：您这车下陡坡，溜不溜？
+小冯：我自己也有一辆在用，下坡它自己会慢下来，溜不了。
+心悦：那坡上要停，溜车怎么办？
+小冯：溜不了，松手就停住。
+心悦：您这车这么宽，窄门过得去吗？
+小冯：好过，我电机灵着呢。
+心悦：那您换一辆试试？
+小冯：不用换，您坐上去试一圈就知道了。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人在展厅同框对坐或并肩站立，心悦先开口，语气带点挑衅
+2. 小冯回应时配合演示动作：坡道匀速、爬坡、过门、刹车
+3. 讲折叠后宽度时给折叠动作特写，镜头看到车身收窄
+4. 两人对话节奏要快，一问一答不留空
+5. 结尾两人一起看镜头，不用加 CTA</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">2</div>
+    <div>
+      <div class="ctitle">没想到，他的通勤车这么特别</div>
+      <div class="cmeta">约 15.7 秒 ｜ 66 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-005 ｜ v5</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/14bsXXYzpZk" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">没想到，他的通勤车这么特别，竟然是台能折叠的。
+车往那儿一架就拉开了，侧身坐上去也省劲。
+开起来简单，坐好就走。
+平常出门也不用老麻烦人。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场站在车旁边，一手指向它，带点惊讶的口气
+2. 讲「一架就开」时给完整动作特写：拉开 → 展开，一气呵成
+3. 讲「侧身坐上去」时拍侧面角度的动作，别只说
+4. 讲「不用老麻烦人」时语气转柔，可配家人同行的画面
+5. 结尾就停在这句，不用加话术</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">3</div>
+    <div>
+      <div class="ctitle">这车折起来，能塞进后备箱吗</div>
+      <div class="cmeta">约 30.2 秒 ｜ 127 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-007 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <div class="empty">（无链接）</div>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：很多叔叔阿姨第一句话就问，这车折起来放得下吗？
+小冯：来，您看，按钮往外一拉，一压就折好了。
+心悦：折完多重？
+小冯：十九公斤，跟个行李箱差不多。
+心悦：塞得进后备箱不？
+小冯：高度九十八，宽四十四，放后备箱绰绰有余。
+心悦：所以这种能折的，关键看折完多大、多沉。
+小冯：拎不动也没事，不能开的时候拖着走就行。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场心悦先提问，镜头给到那台这车折起来，能塞进后备箱吗的车
+2. 小冯回答时必须配实拍动作，不能只说
+3. 讲到关键数字时给特写（车架/把手/车轮/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人一起看镜头，不用加 CTA
+6. 字幕可标关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">4</div>
+    <div>
+      <div class="ctitle">上下坡这车，稳得住吗</div>
+      <div class="cmeta">约 25.5 秒 ｜ 107 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-008 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <div class="empty">（无链接）</div>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：上下坡这车，稳得住吗？
+小冯：下坡您松手就停住了，不往前冲。
+心悦：坡上停会不会溜？
+小冯：电磁刹车，断电也能刹住。
+心悦：上坡呢，动力够吗？
+小冯：二百四的无刷电机，爬坡不吃力。
+心悦：所以坡道多的地方，得看刹车和动力两样。
+小冯：下坡还有个自动匀速，系统会帮着控速。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场心悦先提问，镜头给到那台上下坡这车，稳得住吗的车
+2. 小冯回答时必须配实拍动作，不能只说
+3. 讲到关键数字时给特写（车架/把手/车轮/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人一起看镜头，不用加 CTA
+6. 字幕可标关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">5</div>
+    <div>
+      <div class="ctitle">这车能跑多远，电够不够</div>
+      <div class="cmeta">约 28.1 秒 ｜ 118 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-009 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <div class="empty">（无链接）</div>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：这车能跑多远，电够不够？
+小冯：十安时的锂电，一天出门买菜转公园够了。
+心悦：电还剩多少，怎么知道？
+小冯：把手上有个电量表，低到满一眼就看出来。
+心悦：没电了能充不？
+小冯：电池能整个提出来，拎回去充。
+心悦：所以买这种车，续航和充电池方不方便，都得问。
+小冯：电池有六重保护，充电也放心。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场心悦先提问，镜头给到那台这车能跑多远，电够不够的车
+2. 小冯回答时必须配实拍动作，不能只说
+3. 讲到关键数字时给特写（车架/把手/车轮/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人一起看镜头，不用加 CTA
+6. 字幕可标关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">6</div>
+    <div>
+      <div class="ctitle">路面不平，颠不颠人</div>
+      <div class="cmeta">约 27.4 秒 ｜ 115 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-010 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <div class="empty">（无链接）</div>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：路面不平的地方，颠不颠人？
+小冯：您感受一下，前头是双弹簧减震。
+心悦：石子路上呢？
+小冯：车头跟着地面起伏走，轮子一直贴着地。
+心悦：轮子扎胎怎么办？
+小冯：实心大轮，不扎胎，九寸的过坎也稳。
+心悦：所以小区石子路、减速带多的话，看减震和轮胎。
+小冯：坐垫也是高回弹的，屁股没那么硌。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场心悦先提问，镜头给到那台路面不平，颠不颠人的车
+2. 小冯回答时必须配实拍动作，不能只说
+3. 讲到关键数字时给特写（车架/把手/车轮/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人一起看镜头，不用加 CTA
+6. 字幕可标关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">7</div>
+    <div>
+      <div class="ctitle">不会骑车，也能上手开吗</div>
+      <div class="cmeta">约 27.6 秒 ｜ 116 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-011 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <div class="empty">（无链接）</div>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：不会骑车的人，也能上手开吗？
+小冯：来您看，这个环形把手，往前一推就走。
+心悦：这个开关呢？
+小冯：开关一按就开机，旋钮调快慢，喇叭在这儿。
+心悦：手能握得住吗？
+小冯：扶手是皮革包的，握着不硌手。
+心悦：所以挑车的时候，得让老人自己上手试一回。
+小冯：坐上来开两圈，什么感觉当场就知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场心悦先提问，镜头给到那台不会骑车，也能上手开吗的车
+2. 小冯回答时必须配实拍动作，不能只说
+3. 讲到关键数字时给特写（车架/把手/车轮/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人一起看镜头，不用加 CTA
+6. 字幕可标关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">8</div>
+    <div>
+      <div class="ctitle">原来学电动代步车这么简单</div>
+      <div class="cmeta">约 33.8 秒 ｜ 142 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-012 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/52CXOjhs8Fs/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：电动的太难学，我可不要。
+小冯：不，试试才知道。
+小冯：您看，下坡我一松手就停住了。
+心悦：电磁刹车？断电也能刹住？
+小冯：断电也能刹住。
+心悦：那您一个人能上坡不？
+小冯：二百四的无刷电机，摇杆一推就上去了，不用人推。
+心悦：这么窄的路，您这车过得去不？
+小冯：折起来才四十四公分宽，推摇杆转弯也灵活。
+心悦：原来学电动代步车这么简单呢？
+小冯：只有试试才知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场心悦一脸嫌弃地说「太难学」，反差感要足
+2. 小冯边说边演示：松手停住、摇杆上坡、推把手转弯，动作要连贯
+3. 讲刹车时给车头特写，松开手柄停住的瞬间要拍清
+4. 讲上坡时用坡道实拍，摇杆一推车就上去了
+5. 讲窄路时拍车从门缝/窄道通过的镜头
+6. 结尾两人对视一下，不加 CTA
+7. 字幕可标 44 公分这类关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">9</div>
+    <div>
+      <div class="ctitle">原来矮个子也能开</div>
+      <div class="cmeta">约 27.4 秒 ｜ 115 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-013 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/52CXOjhs8Fs/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：我这么矮，够得着这车吗？
+小冯：不，试试才知道。
+小冯：您看，这个车头能上下调。
+心悦：能调多少？
+小冯：按您身量调，调好了手正好搭得上。
+心悦：调完了坐着硌不硌？
+小冯：座椅有减震弹簧，靠背也撑得住腰。
+心悦：那调完还能不能折？
+小冯：照折不误，一拉就折好。
+心悦：原来矮个子也能开。
+小冯：只有试试才知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场讲车头可调节（不同身高）的顾虑，态度要像真在犯愁
+2. 小冯边说边演示，三次演示配三个不同机位，动作要连贯
+3. 讲到关键数字时给特写（车头/后轮/电池/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人对视一下，不加 CTA，不加地址
+6. 字幕可标 19 公斤、10 安时这类关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">10</div>
+    <div>
+      <div class="ctitle">原来陡坡不往后仰</div>
+      <div class="cmeta">约 30.5 秒 ｜ 128 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-014 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/52CXOjhs8Fs/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：以前那车一上陡坡就往后仰，吓得我不敢上。
+小冯：不，试试才知道。
+小冯：您看这后轮，往后翘着一块。
+心悦：翘着干嘛用的？
+小冯：防倾倒后轮，坡太陡能撑住，不往后翻。
+心悦：那坡上停了溜不溜？
+小冯：电磁刹车，松手就停住。
+心悦：上坡动力够吗？
+小冯：二百四的无刷电机，摇杆一推就上去了。
+心悦：原来陡坡不往后仰。
+小冯：只有试试才知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场讲陡坡防后仰的顾虑，态度要像真在犯愁
+2. 小冯边说边演示，三次演示配三个不同机位，动作要连贯
+3. 讲到关键数字时给特写（车头/后轮/电池/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人对视一下，不加 CTA，不加地址
+6. 字幕可标 19 公斤、10 安时这类关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">11</div>
+    <div>
+      <div class="ctitle">原来电池能拎出来充</div>
+      <div class="cmeta">约 29.8 秒 ｜ 125 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-015 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/52CXOjhs8Fs/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：电池还得整台推去充，太麻烦了。
+小冯：不，试试才知道。
+小冯：您看，电池一抠就下来了。
+心悦：拎去哪儿充？
+小冯：拎回家插上就行，车上也能直接充。
+心悦：这电池安全吗？
+小冯：安规锂电，六重保护，过充过压过流都管着。
+心悦：能充多久啊？
+小冯：十安时的锂电，一天买菜转公园够了。
+心悦：原来电池能拎出来充。
+小冯：只有试试才知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场讲电池可提取的顾虑，态度要像真在犯愁
+2. 小冯边说边演示，三次演示配三个不同机位，动作要连贯
+3. 讲到关键数字时给特写（车头/后轮/电池/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人对视一下，不加 CTA，不加地址
+6. 字幕可标 19 公斤、10 安时这类关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">12</div>
+    <div>
+      <div class="ctitle">原来电的能推、手动能开</div>
+      <div class="cmeta">约 25.7 秒 ｜ 108 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-016 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/52CXOjhs8Fs/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：万一没电了，那不趴窝了？
+小冯：不，试试才知道。
+小冯：您看这个拨杆，往上一推。
+心悦：往上是怎么了？
+小冯：手动模式，推着就能走。
+心悦：往下呢？
+小冯：往下就是电动，一推就走。
+心悦：不能开的地方怎么办？
+小冯：折起来拖着走，抬也抬得动。
+心悦：原来电的手动的都能用。
+小冯：只有试试才知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场手动电动切换由心悦带着情绪说「太…我可不要」，反差要足
+2. 小冯边说边演示，三次演示分别配三个不同机位
+3. 讲到关键数字时给特写（车头/底部/靠背/拨杆/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人对视一下，不加 CTA，不加地址
+6. 字幕可标 19 公斤、44 公分这类关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">13</div>
+    <div>
+      <div class="ctitle">原来一个人也能搬上车</div>
+      <div class="cmeta">约 29.0 秒 ｜ 122 字 ｜ 产品：F2Q ｜ 待审 ｜ 编号 SG-20261020-017 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/52CXOjhs8Fs/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：这么沉，我一个人搬得动吗？
+小冯：不，试试才知道。
+小冯：您看，一拉就折起来了。
+心悦：折完多重？
+小冯：十九公斤，跟个行李箱差不多。
+心悦：塞得进后备箱不？
+小冯：高度九十八，宽四十四，搁后备箱正好。
+心悦：天天拎来拎去的，累不累？
+小冯：折叠不占地，扔后备箱里就成。
+心悦：原来一个人也能搬上车。
+小冯：只有试试才知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场一个人搬上车由心悦带着情绪说「太…我可不要」，反差要足
+2. 小冯边说边演示，三次演示分别配三个不同机位
+3. 讲到关键数字时给特写（车头/底部/靠背/拨杆/折叠动作）
+4. 两人对话节奏要快，一问一答，别让一方说长段
+5. 结尾两人对视一下，不加 CTA，不加地址
+6. 字幕可标 19 公斤、44 公分这类关键数字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">14</div>
+    <div>
+      <div class="ctitle">带座助行器，一个说行一个嫌</div>
+      <div class="cmeta">约 35.7 秒 ｜ 150 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-029 ｜ v11</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：朋友2？不就是四个轮子加个座吗，有什么特别的。
+小冯：来，我折给您看。一拉一压，收了，您看，就这一下。
+心悦：折了不还是得人推。
+小冯：推着也省劲。双侧线控刹车，下坡捏一下就走得稳，不往前冲。
+心悦：那坐着呢，舒服吗？
+小冯：高度能调，座面是软垫的，走累了座一放就能歇一会儿。
+心悦：哟，还真行。那推下楼试试去？
+小冯：走，是骡子是马，推下去转一圈就知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场两人站在同一台朋友2两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯不靠嘴反驳，全靠动作：当场折车、捏刹车、调高度，用事实说话
+3. 心悦语气要有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 讲刹车时真的捏一下双侧线控刹车，让观众看见动作
+5. 讲网布袋时从袋里掏出一样东西做示范
+6. 结尾心悦先开口约试，小冯接「是骡子是马」，抬手指向展厅外
+7. 字幕可标「双侧线控刹车」「可折叠」，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">15</div>
+    <div>
+      <div class="ctitle">一车两种用法</div>
+      <div class="cmeta">约 41.0 秒 ｜ 172 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-030 ｜ v5</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：朋友2？看着就跟普通助行车差不多。
+小冯：它有两种用法。您扶着往前推，它是助行车；翻下来，它就是陪护车，我在后头推您。
+心悦：那推的人使力不使力？
+小冯：推把多档能调，我个儿高您个儿矮，都能找个顺手的位置。
+心悦：推着出门，东西往哪儿放？
+小冯：底下网布袋，菜啊水果塞里头，手还能搭扶手上。
+心悦：哟，一车两用。那我推着走两步，您在后头陪着？
+小冯：走，您在头里当助行车，我在后头当陪护，两样都使使。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台朋友2两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：折车、捏刹车、调高度，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾心悦先松口约试，小冯接「是骡子是马」，抬手指向展厅外
+5. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">16</div>
+    <div>
+      <div class="ctitle">四轮车拐弯笨不笨</div>
+      <div class="cmeta">约 35.7 秒 ｜ 150 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-031 ｜ v5</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：四轮车最怕笨，拐个弯得使老大劲，老人推不动。
+小冯：您瞧前头这轮，八寸万向的，窄地方原地就能调头，不用挪第二下，您试试。
+心悦：那下坡呢，往下出溜怎么办？
+小冯：双侧线控刹车，手一捏就停住，下坡不往前冲。
+心悦：搬上楼沉不沉？
+小冯：铝合金车架，轻，您一只手就拎得动，搬上楼不费劲。
+心悦：那…找个窄地方试试？
+小冯：走，楼道口那块就窄，推过去一转就知道。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台朋友2两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：折车、捏刹车、调高度，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾心悦先松口约试，小冯接「是骡子是马」，抬手指向展厅外
+5. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">17</div>
+    <div>
+      <div class="ctitle">逛累了有地方歇</div>
+      <div class="cmeta">约 38.1 秒 ｜ 160 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-032 ｜ v5</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：老人出门逛着逛着累了，路边有地方坐吗？
+小冯：您看这座面，软垫的，走累了翻下来就能歇，屁股不硌。
+心悦：歇完接着走，收起来麻烦吗？
+小冯：一拉就折，折起来个头不大，塞后备箱正合适，出门带着不占地方。
+心悦：那座儿高低，合不合适呀？
+小冯：多档能调，按身高调，坐着不憋屈，站起来也不费劲。
+心悦：那…我坐上去歇会儿，您推着我走两圈？
+小冯：走，您坐着，我推您，跟平时遛弯一个样。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台朋友2两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：折车、捏刹车、调高度，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾心悦先松口约试，小冯接「是骡子是马」，抬手指向展厅外
+5. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">18</div>
+    <div>
+      <div class="ctitle">一只手拎得动吗</div>
+      <div class="cmeta">约 37.1 秒 ｜ 156 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-033 ｜ v5</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：老人手没劲，一只手捏得住刹车吗？别光看着行。
+小冯：双侧下压式线控，往下轻轻一压就刹住，不用使大劲，老人也捏得动。
+心悦：那推把呢，找个顺手的位置难不难？
+小冯：推把多档能调，高个儿矮个儿都有合适的位置，搭着手不别扭。
+心悦：搬上搬下沉不沉？
+小冯：铝合金车架，轻，拎着不费劲，搬上搬下都行。
+心悦：那…您教我捏一回刹车？
+小冯：走，手往下轻轻一压就成，试一回就会了。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台朋友2两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：折车、捏刹车、调高度，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾心悦先松口约试，小冯接「是骡子是马」，抬手指向展厅外
+5. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">19</div>
+    <div>
+      <div class="ctitle">这车都有什么色儿</div>
+      <div class="cmeta">约 38.1 秒 ｜ 160 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-034 ｜ v5</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：这车咋还有粉的？老人用不着吧，花里胡哨的不实用。
+小冯：薄荷绿、香芋紫，好几个色，老人按喜好挑，推出去也不难看。
+心悦：光好看不顶用，刹得住吗？
+小冯：双侧线控刹车，下坡捏一下就停住，不往前蹿。
+心悦：那出门买菜，东西咋办？
+小冯：网布袋在底下，菜和水果都搁得下，手上还能搭在扶手上歇着。
+心悦：那…绿色的推出来我看看？
+小冯：走，三台色儿都在这儿，您挨个瞧，相中哪台推哪台。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台朋友2两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：折车、捏刹车、调高度，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾心悦先松口约试，小冯接「是骡子是马」，抬手指向展厅外
+5. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">20</div>
+    <div>
+      <div class="ctitle">这车过减速带颠不颠</div>
+      <div class="cmeta">约 36.2 秒 ｜ 152 字 ｜ 产品：减震款助行器 ｜ 待审 ｜ 编号 SG-20261020-035 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：小区减速带多，这车推过去颠不颠呀？
+小冯：您瞧这根弹簧，汽车级减震，过坎不蹿，推的人手也不麻。
+心悦：那坐着硌不硌？
+小冯：双凹云感坐垫，中间凹两边托，坐久了不压屁股，起身也不打滑。
+心悦：逛完收起来麻烦吗？
+小冯：一拉就折，折起来个头不大，塞后备箱正合适，出门带着不占地方。
+心悦：那…推去过一回减速带？
+小冯：走，楼下就有减速带，推过去蹍一下就知道灵不灵。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台减震款旁边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：压弹簧、调档位、折车，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「汽车级弹簧减震」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">21</div>
+    <div>
+      <div class="ctitle">把手能调到合适高度吗</div>
+      <div class="cmeta">约 36.9 秒 ｜ 155 字 ｜ 产品：减震款助行器 ｜ 待审 ｜ 编号 SG-20261020-036 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：高个儿矮个儿都有，这把手咋调？
+小冯：把手八档，一寸一寸往上提，高个儿矮个儿总有一档顺手。
+心悦：那座儿高低呢？
+小冯：坐椅七档，按身高调，坐着不憋屈，站起来也不费劲，老人使着正合适。
+心悦：钢的架子，压得住吗？别中看不中用。
+小冯：高强碳素钢车架，您整个身子压上去都不带晃，稳当着呢。
+心悦：那…照我这身量调一档？
+小冯：走，我先量个手，给您调到最顺手的位置再试。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台减震款旁边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：压弹簧、调档位、折车，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「汽车级弹簧减震」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">22</div>
+    <div>
+      <div class="ctitle">出门买菜放哪儿</div>
+      <div class="cmeta">约 36.0 秒 ｜ 151 字 ｜ 产品：减震款助行器 ｜ 待审 ｜ 编号 SG-20261020-037 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：出门买的那点儿东西，放哪儿啊？
+小冯：您看这袋，大容量储物袋，菜啊水果塞里头，手还能搭在把手上歇着。
+心悦：装满了拎着沉不沉？
+小冯：八公斤九，一只手拎得动，搬上楼搬后备箱都不费劲。
+心悦：搁家里头占地方吗？
+小冯：一拉就折，折起来靠墙角，跟个行李箱差不多，不碍事。
+心悦：那…装满一袋，推出去推推看？
+小冯：走，菜市场遛一圈，袋子装满再回来，您拎着算我输。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台减震款旁边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：压弹簧、调档位、折车，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「汽车级弹簧减震」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">23</div>
+    <div>
+      <div class="ctitle">坐上去得劲儿吗</div>
+      <div class="cmeta">约 36.7 秒 ｜ 154 字 ｜ 产品：减震款助行器 ｜ 待审 ｜ 编号 SG-20261020-038 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：这坐垫坐着得劲儿吗？别硬邦邦的硌屁股。
+小冯：双凹云感的，您坐上来试试，屁股有地方托，腰也能靠着。
+心悦：座儿能调高低吗？
+小冯：坐椅七档，腿长的腿短的都能找到合适的位置，不高不低正合适。
+心悦：石子路上颠得慌怎么办？
+小冯：汽车级弹簧减震，车头跟着地面起伏走，石子路上也不硬蹿。
+心悦：那…我坐上去歇会儿，您推着我走走？
+小冯：走，您坐着别动，我推您走两圈试试。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台减震款旁边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：压弹簧、调档位、折车，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「汽车级弹簧减震」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">24</div>
+    <div>
+      <div class="ctitle">这车看着单薄结实吗</div>
+      <div class="cmeta">约 36.0 秒 ｜ 151 字 ｜ 产品：减震款助行器 ｜ 待审 ｜ 编号 SG-20261020-039 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：看着挺单薄的，结实吗？别坐两天就晃荡。
+小冯：高强碳素钢车架，焊点密，您使劲压压听声儿都是实的。
+心悦：钢的那不就沉吗？老人使得动？
+小冯：八公斤九，比您手里那袋米还轻，拎着就能走，一点儿不逞强。
+心悦：那路上颠得慌咋办？
+小冯：汽车级弹簧减震，过坎不蹿，推的人手也不麻，坐着也不怎么颠。
+心悦：那…我使劲压压这架子？
+小冯：走，您上手使劲压，晃一下算我的。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台减震款旁边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：压弹簧、调档位、折车，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「汽车级弹簧减震」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">25</div>
+    <div>
+      <div class="ctitle">晚上出门黑咋办</div>
+      <div class="cmeta">约 35.7 秒 ｜ 150 字 ｜ 产品：GB-819智能收音机拐杖 ｜ 待审 ｜ 编号 SG-20261020-040 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：老人晚上出门，黑灯瞎火的咋办呀？
+小冯：您按这个键，LED 灯一亮，一百八流通明，前头照得清清亮亮。
+心悦：亮多久啊？别走半道没电了。
+小冯：充满电能照十二个钟头，遛个弯绰绰有余，USB 口跟手机一个线。
+心悦：那下雨天呢？灯会不会进水？
+小冯：IP43 防溅水，下点小雨不打紧，擦干了照常使。
+心悦：那…摁亮了看看？
+小冯：走，楼道里暗，您摁一下看照得远不远。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在桌边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：摁灯、拧台、调长短，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「IP43 防溅水」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">26</div>
+    <div>
+      <div class="ctitle">这杖还能听收音机</div>
+      <div class="cmeta">约 36.2 秒 ｜ 152 字 ｜ 产品：GB-819智能收音机拐杖 ｜ 待审 ｜ 编号 SG-20261020-041 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：拐杖还能听收音机？忽悠人呢吧。
+小冯：您拧这个旋钮，76 到 108 兆赫，调频广播随便挑，台多着呢。
+心悦：听得清吗？别滋啦滋啦的乱响。
+小冯：您戴耳机或者外放都行，遛弯听个戏听个新闻，解闷儿。
+心悦：费电吗？听一会儿就没电咋办？
+小冯：USB 充电，跟手机共用一个充电头，晚上充上一宿就行。
+心悦：那…拧个台我听听？
+小冯：走，这会儿正播着戏呢，您拧到那个台试试。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在桌边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：摁灯、拧台、调长短，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「IP43 防溅水」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">27</div>
+    <div>
+      <div class="ctitle">拐杖能调长短吗</div>
+      <div class="cmeta">约 36.9 秒 ｜ 155 字 ｜ 产品：GB-819智能收音机拐杖 ｜ 待审 ｜ 编号 SG-20261020-042 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：高个儿矮个儿都有，这杖能调长短吗？别一个尺寸糊弄人。
+小冯：您拧这个结，铝合金杖杆能伸缩，一节一节往上调。
+心悦：调的当口松了咋办？别拄着往下缩。
+小冯：卡扣锁死了，拧紧了一般不松，您攥住甩两下试试。
+心悦：那拄着沉不沉？
+小冯：杖杆是铝合金的，轻，手里头没多少分量，拄着不累。
+心悦：那…照我的个儿调一节试试？
+小冯：走，您站直了，我给您量个手，调到手腕齐平那节。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在桌边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：摁灯、拧台、调长短，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「IP43 防溅水」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">28</div>
+    <div>
+      <div class="ctitle">一个人出门咋办</div>
+      <div class="cmeta">约 36.7 秒 ｜ 154 字 ｜ 产品：GB-819智能收音机拐杖 ｜ 待审 ｜ 编号 SG-20261020-043 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：老人一个人出门，有点事儿咋办？喊不着人。
+小冯：杖上有个警笛键，一摁一百多分贝，老远都听得见。
+心悦：光有声儿，别人知道往哪儿看吗？
+小冯：还带红光闪光，一喘一喘的，夜里头特别显眼，老远能看见。
+心悦：那电池撑得住吗？别到用的时候没电。
+小冯：USB 充电，手机线直接充，出门前充上就行。
+心悦：那…摁一下我听听动静？
+小冯：走，您先捂下耳朵，我教您摁哪个键不费劲。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在桌边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：摁灯、拧台、调长短，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「IP43 防溅水」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">29</div>
+    <div>
+      <div class="ctitle">下雨天能拄吗</div>
+      <div class="cmeta">约 36.7 秒 ｜ 154 字 ｜ 产品：GB-819智能收音机拐杖 ｜ 待审 ｜ 编号 SG-20261020-044 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：下雨天路滑，这杖能拄吗？别进水坏了使不成。
+小冯：IP43 防溅水，雨点子打上不碍事，擦干了照样使。
+心悦：那杖身呢？会不会锈？
+小冯：铝合金杖杆，沾了水擦一把就行，不爱生锈，用得住。
+心悦：淋了雨，灯和收音机还灵吗？
+小冯：您放心，USB 口有盖，充好电该照明照明，该听戏听戏，一样不落。
+心悦：那…淋点儿水试试？
+小冯：走，接点儿雨水泼上去，擦干了当场摁亮给您看。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在桌边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：摁灯、拧台、调长短，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「IP43 防溅水」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">30</div>
+    <div>
+      <div class="ctitle">上陡坡往后仰吗</div>
+      <div class="cmeta">约 36.0 秒 ｜ 151 字 ｜ 产品：小飞燕护理手推车 ｜ 待审 ｜ 编号 SG-20261020-045 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：小飞燕？上陡坡会不会往后仰啊？
+小冯：您瞧后轮这块，防倾轮，坡一陡它就自动触地支撑着，不后翻。
+心悦：那推着费不费劲？
+小冯：轮子是三百六度万向的，实心弹性轮，推起来顺滑不卡顿。
+心悦：车架子扛得住吗？别压两年就变形。
+小冯：加厚碳钢合金管，壁加厚了，耐磨抗锈，也不易变形。
+心悦：那…推去过一回陡坡？
+小冯：走，地库那个坡够陡，推上去您看防倾轮啥时候落地。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台小飞燕两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：指防倾轮、放靠背、原地调头，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「防倾轮」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">31</div>
+    <div>
+      <div class="ctitle">这车能躺吗</div>
+      <div class="cmeta">约 35.7 秒 ｜ 150 字 ｜ 产品：小飞燕护理手推车 ｜ 待审 ｜ 编号 SG-20261020-046 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：老人逛累了想躺一会儿，这车能躺吗？
+小冯：靠背两档，九十五度端坐，一百四十五度仰躺，一提一拉就换。
+心悦：换挡的时候松了咋办？别躺到一半塌下来。
+小冯：卡扣精准分档，锁死了稳当着，您晃两下试试。
+心悦：躺上头颠不颠？
+小冯：底座加大加宽了，轴距也宽，坐着躺着都不那么晃了。
+心悦：那…放平了我试试？
+小冯：走，我给您放到仰躺那档，您靠上去试试腰有处托没有。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台小飞燕两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：指防倾轮、放靠背、原地调头，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「防倾轮」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">32</div>
+    <div>
+      <div class="ctitle">窄处调头灵吗</div>
+      <div class="cmeta">约 37.1 秒 ｜ 156 字 ｜ 产品：小飞燕护理手推车 ｜ 待审 ｜ 编号 SG-20261020-047 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：电梯口、楼道口那么窄，这车调头灵吗？别卡半道上。
+小冯：前轮三百六度万向，原地就能调头，顺滑不卡顿，一把就过来。
+心悦：轮子耐磨不耐磨？别推俩月就磨平了。
+小冯：稳固弹性实心轮，耐磨防滑，推起来也顺当，不较劲。
+心悦：窄路上稳不稳？别一头栽过去。
+小冯：底座加大加宽，轴距宽，窄道上也不飘。
+心悦：那…找个窄地方转转？
+小冯：走，电梯口那块最窄，推过去原地转一圈您瞧。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台小飞燕两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：指防倾轮、放靠背、原地调头，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「防倾轮」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">33</div>
+    <div>
+      <div class="ctitle">这车晃不晃</div>
+      <div class="cmeta">约 35.7 秒 ｜ 150 字 ｜ 产品：小飞燕护理手推车 ｜ 待审 ｜ 编号 SG-20261020-048 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：小飞燕这车，推起来晃不晃？别软绵绵的。
+小冯：车架子是加厚碳钢合金管，壁加厚，不易变形，承重也更高。
+心悦：碳钢的那不就沉吗？推着费不费劲？
+小冯：轮子是三百六度万向的，顺滑不卡顿，推起来不较劲。
+心悦：那路上坑坑洼洼的呢？
+小冯：底座加大、轴距加宽，压得住，过坎坐着也不飘。
+心悦：那…我上手推两圈？
+小冯：走，您推着过两个减速带，手里头感觉一下晃不晃。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台小飞燕两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：指防倾轮、放靠背、原地调头，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「防倾轮」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">34</div>
+    <div>
+      <div class="ctitle">谁都能开吗</div>
+      <div class="cmeta">约 38.3 秒 ｜ 161 字 ｜ 产品：小飞燕护理手推车 ｜ 待审 ｜ 编号 SG-20261020-049 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/h3AJIsVteww/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">心悦：这车谁能用？家里老人使得惯吗？别光年轻人使得了。
+小冯：老人、孕妈、儿童都能用，全家可用，一车伺候一家人，不挑人。
+心悦：那用前要安装不？别买回去抓瞎。
+小冯：免安装，打开就能用，折起来还不占空间，塞后备箱正合适。
+心悦：推着逛半天累不累？
+小冯：轻巧便携，轮子也顺滑，一个人推着不费劲，逛半天也不累。
+心悦：那…我推两圈试试？
+小冯：走，您推着绕展厅一圈，哪儿不顺手您跟我说。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 两人站在同一台小飞燕两边，心悦抱着胳膊挑刺，小冯不吭声听着
+2. 小冯全程不靠嘴反驳、全靠动作：指防倾轮、放靠背、原地调头，用事实说话
+3. 心悦语气有弧线：不屑 → 咦？ → 认可，最后一句眼睛亮了
+4. 结尾的收尾句每篇不同，按本篇卖点演，别用同一句话凑
+5. 字幕可标功能名（如「防倾轮」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">35</div>
+    <div>
+      <div class="ctitle">轮椅下台阶咋弄</div>
+      <div class="cmeta">约 19.5 秒 ｜ 82 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-050 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">轮椅碰上台阶，下不去怎么办？
+挑能快折的，几下一折，拎着就下去了。
+折完有卡扣锁着，拎着不散。
+到平地一按就展开，几秒的事儿。
+挑的时候问清整车多重，轻一些的一个人拎得动。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲怎么挑，一条一条说清楚，别赶
+4. 结尾就停在最后一条建议，不加 CTA 不加地址
+5. 结尾的收尾句每篇不同，按本篇场景演，别用同一句话凑
+6. 本批不代入产品，台词里不出现任何型号名
+7. 字幕不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">36</div>
+    <div>
+      <div class="ctitle">想带出门塞不下咋办</div>
+      <div class="cmeta">约 16.7 秒 ｜ 70 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-051 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">想带老人出门，轮椅塞不进后备箱怎么办？
+挑能折的，折起来立着放，占地小。
+问清公斤数，轻的自己能抬，重的得俩人搭手。
+到地方一按就开，不用拧螺丝。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲怎么挑，一条一条说清楚，别赶
+4. 结尾就停在最后一条建议，不加 CTA 不加地址
+5. 结尾的收尾句每篇不同，按本篇场景演，别用同一句话凑
+6. 本批不代入产品，台词里不出现任何型号名
+7. 字幕不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">37</div>
+    <div>
+      <div class="ctitle">家门口窄进不去</div>
+      <div class="cmeta">约 16.0 秒 ｜ 67 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-052 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">家门口窄，轮椅推进去费劲怎么办？
+挑车前先量门框多宽，再对照车多宽。
+问清最宽处多少公分，扶手外沿也算。
+前轮能万向转的，进门原地就能掉头。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲怎么挑，一条一条说清楚，别赶
+4. 结尾就停在最后一条建议，不加 CTA 不加地址
+5. 结尾的收尾句每篇不同，按本篇场景演，别用同一句话凑
+6. 本批不代入产品，台词里不出现任何型号名
+7. 字幕不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">38</div>
+    <div>
+      <div class="ctitle">没电了扔半道咋办</div>
+      <div class="cmeta">约 16.9 秒 ｜ 71 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-053 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">电动轮椅没电了，扔半道上怎么办？
+多数电车都有手推模式，拨一下就能推着走。
+挑的时候问清空车多重，轻一些的推着不累。
+看电量显示，剩一两格就该充了。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲怎么挑，一条一条说清楚，别赶
+4. 结尾就停在最后一条建议，不加 CTA 不加地址
+5. 结尾的收尾句每篇不同，按本篇场景演，别用同一句话凑
+6. 本批不代入产品，台词里不出现任何型号名
+7. 字幕不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">39</div>
+    <div>
+      <div class="ctitle">地库坡陡不敢下</div>
+      <div class="cmeta">约 18.3 秒 ｜ 77 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-054 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">地库坡陡，坐电动轮椅下坡心里发慌怎么办？
+下坡用低速档，慢慢蹭着走，别直着冲。
+挑带驻车刹车的，停住就锁死，不后溜。
+先推着走一趟试试，心里有数再让老人自己下。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲怎么挑，一条一条说清楚，别赶
+4. 结尾就停在最后一条建议，不加 CTA 不加地址
+5. 结尾的收尾句每篇不同，按本篇场景演，别用同一句话凑
+6. 本批不代入产品，台词里不出现任何型号名
+7. 字幕不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">40</div>
+    <div>
+      <div class="ctitle">买菜回来东西放哪儿</div>
+      <div class="cmeta">约 14.8 秒 ｜ 62 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-055 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">买完菜东西放哪儿？
+朋友2底下有个网布袋，菜和水果塞里头。
+手还能搭在扶手上，不用拎着。
+车架是铝合金的，能折起来，拎回去也不沉。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲这车怎么用，一条一条说清楚，别赶
+4. 结尾就停在最后一句，不加 CTA 不加地址
+5. 结尾就停在最后一句，不加 CTA、不加地址
+6. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">41</div>
+    <div>
+      <div class="ctitle">推累了能坐会儿吗</div>
+      <div class="cmeta">约 15.5 秒 ｜ 65 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-056 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">推着推着累了，能坐会儿吗？
+朋友2有座面，软垫的，坐上去歇一歇。
+把手能一档一档调高低，推着顺手。
+走累了往下一坐，歇够了自己就能起来。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲这车怎么用，一条一条说清楚，别赶
+4. 结尾就停在最后一句，不加 CTA 不加地址
+5. 结尾就停在最后一句，不加 CTA、不加地址
+6. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">42</div>
+    <div>
+      <div class="ctitle">这车下坡刹得住吗</div>
+      <div class="cmeta">约 14.3 秒 ｜ 60 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-057 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">下坡的时候刹得住吗？
+朋友2是双侧下压式线控，手一捏就停住。
+前轮八寸万向的，拐弯也跟得上。
+车架铝合金的，推起来稳当，不晃。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲这车怎么用，一条一条说清楚，别赶
+4. 结尾就停在最后一句，不加 CTA 不加地址
+5. 结尾就停在最后一句，不加 CTA、不加地址
+6. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">43</div>
+    <div>
+      <div class="ctitle">楼道口窄推得过去吗</div>
+      <div class="cmeta">约 15.5 秒 ｜ 65 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-058 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">楼道口窄，推得过去吗？
+朋友2前轮是八寸万向的，原地就能调头。
+想收起来一拉就折，靠墙一放不占地方。
+把手能一档一档调高低，您推着顺手。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲这车怎么用，一条一条说清楚，别赶
+4. 结尾就停在最后一句，不加 CTA 不加地址
+5. 结尾就停在最后一句，不加 CTA、不加地址
+6. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">44</div>
+    <div>
+      <div class="ctitle">自个儿能推着走吗</div>
+      <div class="cmeta">约 14.8 秒 ｜ 62 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-059 ｜ v3</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">老人能自个儿推着走吗？
+能。朋友2是助行、陪护两用。
+想走自个儿扶着走，想歇就翻下来坐。
+两个把手，中间有刹车，走多远都心里有底。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲这车怎么用，一条一条说清楚，别赶
+4. 结尾就停在最后一句，不加 CTA 不加地址
+5. 结尾就停在最后一句，不加 CTA、不加地址
+6. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">45</div>
+    <div>
+      <div class="ctitle">这车还有绿色的</div>
+      <div class="cmeta">约 14.5 秒 ｜ 61 字 ｜ 产品：朋友2 ｜ 待审 ｜ 编号 SG-20261020-060 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/Uuxh3-unN7w/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">这车还有绿色的？
+薄荷绿、香芋紫，好几个色，按喜好挑。
+车架是铝合金的，一拉就折，收了不占地方。
+推把还能调高度，谁推着都顺手。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 单人出镜，对着镜头说，语速跟日常聊天一样
+2. 开头一句是观众的真麻烦，语气带点犯难
+3. 中间讲这车怎么用，一条一条说清楚，别赶
+4. 结尾就停在最后一句，不加 CTA 不加地址
+5. 结尾就停在最后一句，不加 CTA、不加地址
+6. 字幕可标功能名（如「双侧线控刹车」），不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+  <div class="foot">由 tools/build_tencent_table.py 自动生成 ｜ 出新稿后重跑即可刷新</div>
+</div>
+</body>
+</html>

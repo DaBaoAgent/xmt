@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对标 vs 改稿 · 左右对照表</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --ink2:#5d6672; --line:#e2e5ea;
+    --left:#fff8f0; --leftline:#f0d9bd; --right:#f0f7ff; --rightline:#c5dcf5;
+    --ok:#0a7d3e; --okbg:#e8f6ed; --warn:#9a6100; --warnbg:#fff5e0;
+    --accent:#1f5fd0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:26px 20px 60px;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+    line-height:1.6;font-size:14px}
+  .wrap{max-width:1500px;margin:0 auto}
+  h1{font-size:23px;margin:0 0 4px;letter-spacing:-.3px}
+  .sub{color:var(--ink2);font-size:13px;margin-bottom:8px}
+  .tip{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;margin:12px 0 20px;color:var(--ink2)}
+  .tip b{color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    margin-bottom:20px;overflow:hidden}
+  .chead{display:flex;align-items:flex-start;gap:12px;padding:15px 20px;
+    border-bottom:1px solid var(--line);background:#fbfcfd}
+  .no{flex:none;width:30px;height:30px;border-radius:8px;background:var(--accent);
+    color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;
+    justify-content:center}
+  .ctitle{font-size:17px;font-weight:600;line-height:1.4}
+  .cmeta{font-size:12.5px;color:var(--ink2);margin-top:3px}
+  .pill{display:inline-block;padding:1.5px 8px;border-radius:999px;font-size:11.5px;
+    font-weight:600;white-space:nowrap}
+  .p-ok{background:var(--okbg);color:var(--ok)}
+  .p-info{background:#eaf1fd;color:var(--accent)}
+  .cols{display:grid;grid-template-columns:1fr 1fr}
+  .col{padding:16px 20px;min-width:0}
+  .col.left{background:var(--left);border-right:1px solid var(--line)}
+  .col.right{background:var(--right)}
+  .coltag{font-size:11.5px;font-weight:700;letter-spacing:.06em;
+    color:var(--ink2);margin-bottom:11px;display:flex;align-items:center;gap:6px}
+  .coltag:before{content:"";width:3px;height:12px;border-radius:2px;background:var(--ink2)}
+  .col.left .coltag:before{background:#c9873f}
+  .col.right .coltag:before{background:var(--accent)}
+  h4{font-size:12px;color:var(--ink2);font-weight:700;margin:14px 0 6px;
+    letter-spacing:.03em}
+  h4:first-of-type{margin-top:0}
+  .body{white-space:pre-wrap;word-break:break-word;font-size:13.5px;line-height:1.75}
+  .script{background:#fff;border:1px solid var(--rightline);border-radius:9px;
+    padding:13px 15px;white-space:pre-wrap;word-break:break-word;
+    font-size:14.5px;line-height:1.95}
+  a.vlink{display:inline-flex;align-items:center;gap:6px;background:#fff;
+    border:1px solid var(--leftline);border-radius:8px;padding:7px 12px;
+    color:#b1620e;text-decoration:none;font-size:13px;font-weight:600}
+  a.vlink:hover{background:#fff3e2}
+  details{margin-top:8px}
+  summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--accent);
+    padding:5px 0;user-select:none}
+  summary:hover{text-decoration:underline}
+  details[open] summary{margin-bottom:7px}
+  .detail{background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 13px;
+    font-size:12.5px;line-height:1.7;max-height:460px;overflow:auto}
+  .kvlist{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 13px;
+    font-size:12.5px;line-height:1.75}
+  .kvlist div+div{margin-top:3px}
+  .badge{display:inline-block;background:var(--okbg);color:var(--ok);font-weight:700;
+    padding:1px 7px;border-radius:5px;margin-right:5px}
+  .foot{color:var(--ink2);font-size:12.5px;text-align:center;margin-top:26px}
+  .empty{color:var(--ink2);font-size:13px}
+  a.acct{display:flex;align-items:center;gap:12px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:15px 20px;margin-bottom:14px;
+    text-decoration:none;color:inherit;transition:box-shadow .15s,border-color .15s}
+  a.acct:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(31,95,208,.12)}
+  a.acct .no{background:var(--accent)}
+  @media(max-width:1000px){.cols{grid-template-columns:1fr}.col.left{border-right:none;
+    border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>翔哥号 · 对标 vs 改稿</h1>
+  <div class="sub">出镜：翔哥 ｜ 形式：单人口播 ｜ 共 11 条定稿 ｜ 生成于 2026-10-23 13:59</div>
+  <div class="tip">
+    <b>用法</b>：点左侧「▶ 看原片」跳到视频 → 对着右侧逐字稿看结构怎么改的 → 右边是可直接拿去拍的版本。
+    对标原片有价格和数字的，<b>一个都不能照抄</b>，只能学它的结构。
+  </div>
+  
+<div class="card">
+  <div class="chead">
+    <div class="no">1</div>
+    <div>
+      <div class="ctitle">轮椅不就是四个轮子加个架子吗</div>
+      <div class="cmeta">约 62.4 秒 ｜ 262 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-002 ｜ v20</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://weixin.qq.com/sph/AjrnRxumiG" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：视频号</div><div>作者：轮椅哥明月</div><div>原时长：115.8 秒</div></div>
+      <h4>结构拆解</h4>
+      <details>
+        <summary>展开看完整拆解（1801 字）</summary>
+        <div class="detail">- **钩子**：反常识 ｜ 超过500块钱的轮椅都是智商税。
+ - 为什么有效：以反常识的观点吸引观众注意力，引发好奇心
+- **受众**：对轮椅价格和质量存疑、有购买轮椅需求的人
+- **主题/品类**：介绍运动轮椅性价比高，打破轮椅是智商税的看法 ｜ 手动轮椅
+- **结构**：
+ - 钩子（3m20s–3m23s）：提出超过500块钱的轮椅都是智商税这一反常识观点；作用：吸引观众注意力，引发后续讨论
+ - 展开（3.0s–13.0s）：描述普通轮椅的组成及质疑其价格合理性，提及看到评论区相关言论；作用：进一步阐述反常识观点，为后续反驳做铺垫
+ - 转折（13.3s–19.2s）：指出发表质疑言论的人可能不了解情况；作用：开始为轮椅价值进行合理解释
+ - 卖点1（19.4s–30.6s）：引导观众搜索轮组价格，说明轮组用在自行车上价格高；作用：通过对比说明轮椅轮组价值，反驳智商税观点
+ - 卖点1（31.0s–34.9s）：强调将高价轮组用在轮椅上不应被认为是暴利；作用：继续为轮椅价值辩护
+ - 卖点2（35.1s–45.3s）：介绍轮椅总宽度和座宽，说明能通过狭小空间的优势；作用：介绍轮椅的实用卖点
+ - 卖点2（45.5s–51.3s）：说明轮椅可通过狭小卫生间和高铁通道；作用：进一步强调轮椅通过性优势
+ - 卖点3（51.6s–58.9s）：介绍轮椅仅重9.5公斤，并引导观众搜索同重量轮椅价格；作用：突出轮椅重量轻的优势
+ - 卖点3（59.2s–1m04s）：强调比自己轮椅贵的轮椅都没有它轻；作用：强化轮椅重量轻的独特优势
+ - 卖点4（1m06s–1m14s）：展示轮椅灵活、坚固的特点，通过操作和声音体现；作用：介绍轮椅的操作和坚固性能优势
+ - 卖点4（1m13s–1m14s）：再次强调轮椅的灵活性；作用：进一步突出轮椅灵活性优势
+ - 卖点4（1m29s–1m33s）：通过声音体现轮椅的坚固性；作用：强化轮椅坚固性能优势
+ - 卖点4（1m35s–1m47s）：通过撞和停的操作展示轮椅的结实和操控性；作用：全面展示轮椅坚固和操控优势
+ - CTA（1m50s–1m56s）：强调轮椅不到3000元，反问轮椅是否贵；作用：以价格优势引导观众认为轮椅性价比高，促进购买意愿
+- **卖点顺序**：
+ 1. 价格实惠，不到3000元（证据：就这样一款轮椅才3000不到，大家说轮椅它贵吗？）
+ 2. 可通过狭小空间（证据：这是一个36的座宽，那么我们总宽度做到了53厘米。通过一些狭小的卫生间，甚至去高铁的话，你都能畅通无阻的。）
+ 3. 重量轻（证据：咱们这个轮椅呢，仅重9.5公斤。大家可以在网上找一下9.5公斤的轮椅，看看卖多少钱。甚至比我们卖的贵的，几千块钱的，大几千甚至上万的都没有我们轻。）
+ 4. 轮组质量好（证据：这个轮组呢是用在自行车上的，都是卖到大几百甚至大几千一对。那么这种东西如果放在轮椅上，怎么就成了暴利了呢？）
+ 5. 灵活（证据：大家看一下啊。嘿，大家看到了吧，就是这么灵活。）
+ 6. 坚固（证据：而且咱这款轮椅非常的坚固，你听这个声音，是吧？你看。多么多么的结实，你听这个声音你就觉得很扎实，操纵起来啊，咱们可以看一下我撞那个地方，看能不能撞到啊。看到了吧？说停就停啊，说走就走。）
+- **CTA**：无 ｜ — ｜ 映射：—
+- **节奏**：时长 1m56s ｜ 分段 14 ｜ 平均 8.275s
+- **语感**：直给、短句、口语化，一句话一个信息点，敢说，但不贬低友商，视频号版本更沉稳、更像聊天，带情感和转发理由
+- **可学的结构**：
+ - 先提出反常识观点吸引眼球，再逐步展开解释和说明，通过列举产品特点和优势进行推销，最后以价格和反问促成行动
+- **不要复刻**：
+ - 超过500块钱的轮椅都是智商税。
+ - 具体轮椅组成描述及评论区言论
+ - 特定轮组价格及对比数据
+- **账号判断**：口播号 ｜ 置信度 0.9 ｜ 视频是单人观点输出，有避坑、选购判断内容，符合口播号特点；未体现品牌号双人问答、产品演示等特点，也未体现个人号第一人称、工厂日常等特点
+- **选品判断**：手动轮椅 ｜ 置信度 0.9 ｜ 对标视频主题为介绍运动轮椅性价比高，品类为手动轮椅，展厅确认款中有手动轮椅相关产品</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">评论区老有人说，轮椅不就四个轮子加个架子，不值几个钱。
+这话我天天能在评论区看到。说句实在话，说这话的人，多半自己没坐过轮椅。
+你们上网查查那轮子就知道了。那是自行车上用的，一对就好几百上千。
+放到轮椅上怎么就成暴利了？
+咱这款做得实在，大家看整车有多宽。座位多宽？整台车多宽？
+家里厕所窄的、坐高铁要过通道的，都能过去。
+还有一样，轻。老人自己拎得动，儿女带着出门也方便。
+再一个，结实。大家看啊，推起来就这么利索。
+而且它结实，你听这动静。推起来咱撞一下试试，看它晃不晃。
+所以轮椅好不好，别听人瞎说，自己上手推两把。
+说停就停，说走就走。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场正对镜头，表情认真，直接复述质疑，不铺垫
+2. 讲到宽度时拍整车过窄门的镜头，让画面说明问题
+3. 讲到重量时演示单手拎起或提起车架的动作
+4. 讲结实不结实时给轮子特写，用手拨一下听异响
+5. 「推起来咱撞一下试试」这句必须配实拍动作，边撞边说
+6. 结尾语气转平，指向展厅邀请试车</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">2</div>
+    <div>
+      <div class="ctitle">轮椅定制到底定制些什么</div>
+      <div class="cmeta">约 86.2 秒 ｜ 362 字 ｜ 产品：博爱方特BA-LZ-2 ｜ 待审 ｜ 编号 SG-20261020-019 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/P3C38RT6V5Q/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">总有人问我，轮椅定制，定的是些什么？
+今天一条讲清楚，看完少花冤枉钱。
+第一样，尺寸。
+坐宽，就是你屁股两边最宽那块，量准了才不挤。
+坐深，尾骨到腿窝，留四指，坐久了不顶。
+靠背高低和角度，也是可调的，腰有地方靠。
+第二样，配置。
+手划圈，宽窄圆扁随你挑。
+第三样，重心。
+这个最要紧。
+技术还不太行的，重心往后调，不容易后翻。
+滑得顺的，重心往前调，推起来特别轻。
+博爱方特这台，这些都能按你的尺寸和喜好来。
+车架是航空铝的，坐宽六档，三十六到四十六公分。
+坐深也能调，三十六到四十八。
+前坐高三十九到五十二，后坐高三十七到四十四。
+靠背碳纤维，能快拆，高低角度都能调。
+前轮颜色还有黑、钛、金、蓝、红、紫，按你喜好选。
+定完了坐上去贴合身体，滑起来也省劲。
+要是拿不准尺寸，来苏州阳光大厦展厅找我。
+我帮你量，帮你调。
+我是翔哥，做了十年辅具，关注我，少走弯路。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场坐对镜头，语气像在回答评论区提问，别端着
+2. 讲尺寸时手里拿卷尺，边说边在自己身上比画量点
+3. 讲重心时两手在车架上做前后推的动作，让观众看懂重心在哪
+4. 讲颜色选配时镜头扫过几台不同颜色前轮的车
+5. 讲到「帮你量帮你调」时抬手指一下展厅方向
+6. 结尾看镜头说关注，语速放慢
+7. 字幕可标坐宽坐深的数字区间，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">3</div>
+    <div>
+      <div class="ctitle">便宜的仿运动轮椅，差在哪儿</div>
+      <div class="cmeta">约 53.8 秒 ｜ 226 字 ｜ 产品：博爱方特BA-LZ-2 ｜ 待审 ｜ 编号 SG-20261020-020 ｜ v5</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/T64zlGw73is/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">市面上不少便宜车，号称是运动轮椅。
+问题基本都在一样的地方。
+材质缩水，车架管子薄，用上一两年就晃。
+没有调节结构，坐宽坐深都是死的，人合不上车。
+靠背也不能调高低，坐久了腰没处靠。
+所以挑这种车，别光看价格。
+你看它车架是什么料，坐宽能不能一档档调，靠背能不能调高低。
+博爱方特这台，坐宽六档，三十六到四十六公分，坐深前后坐高都能调。
+靠背是碳纤维的，能快拆，高低角度随便调。
+车架质保五年。
+你家的车，坐宽是死的还是能调的？评论区说说。
+我是翔哥，关注我，挑车少走弯路。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场站对镜头，语气像在劝人，别像在骂人（不说竞品坏话）
+2. 讲材质缩水时拿两根管子对比粗细，让画面说明问题
+3. 讲调节结构时演示坐宽档位切换 + 靠背高低调节，动作要连贯
+4. 讲质保时语气放平稳，像在给底气，别喊促销
+5. 结尾看镜头邀请评论区互动，语速放慢
+6. 字幕可标坐宽档位和质保年限，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">4</div>
+    <div>
+      <div class="ctitle">给父母买轮椅，别栽在材质上</div>
+      <div class="cmeta">约 73.3 秒 ｜ 308 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-021 ｜ v1</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/O6ZG7YitUnQ/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">不少年轻人给父母挑轮椅，图便宜就心动，觉得能推就行。
+但给父母用，轻便和耐用才是顶要紧的。
+先说重量。
+碳钢车架普遍十二到十五公斤，搬一趟挺费劲。
+塞后备箱常常得两个人搭手，赶上没电梯的老楼，更是喘得不行。
+再说防锈。
+碳钢车架下雨天推出去一趟，接缝那儿就容易长锈。
+锈迹擦不掉，还慢慢往外扩。
+用上小半年，车就显得旧了。
+所以我常跟来店里的人讲，预算再紧，也优先看铝合金车架。
+整车分量能控制在八到十二公斤。
+老人自己扶着也能挪个位置，儿女搬着省力，出门带着也方便。
+挑的时候你就记住两点。
+一问车架什么材质，二问整车多少公斤。
+这两样问清楚了，比看十张图片都管用。
+你给爸妈买车，问过材质吗？评论区说说。
+我是翔哥，关注我，给爸妈挑车少走弯路。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场像在跟人说事，语气像邻居大哥，别像讲课
+2. 讲重量时真去抬一下车，让人看出分量
+3. 讲防锈时给车架接缝特写，手指点一下（可用道具示意，别拍生锈竞品）
+4. 讲「老人自己扶着挪位置」时演示单手扶车挪动的动作
+5. 结尾看镜头，邀请评论区互动，语速放慢
+6. 字幕可标 8-12 公斤，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">5</div>
+    <div>
+      <div class="ctitle">有的轮椅用不久，问题常出在车架上</div>
+      <div class="cmeta">约 52.1 秒 ｜ 219 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-022 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/181CSr8Buoo/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">常有轮友问我，为什么有的轮椅用上两三年就松了。
+我跟他们讲，先看车架。
+拼焊的车架，焊点就是软肋，使久了焊点先松，整车跟着晃。
+材质没选对，接缝那儿还容易长锈，越使越糟。
+那挑的时候看什么？
+看车架是不是一体的，焊点越少越简单，简单的反而不容易坏。
+看材质，铝合金的比碳钢的轻，也不容易生锈。
+看整车分量，轻一些，自己挪位置省力，儿女搬着也轻松。
+这三点看下来，比听十句介绍都管用。
+你家的车，用了几年还稳当吗？评论区说说。
+我是翔哥，关注我，挑车少走弯路。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场像在回答轮友提问，语气实在，别像讲课
+2. 讲拼焊车架时手指在车架焊点位置点一下，让观众看见焊点在哪
+3. 讲材质时拿两块料子对比轻重，让画面说明问题
+4. 讲日常打理时做擦车的动作
+5. 结尾看镜头邀请评论区互动，语速放慢
+6. 字幕可标关键判断点，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">6</div>
+    <div>
+      <div class="ctitle">买轮椅，手动的还是电动的</div>
+      <div class="cmeta">约 89.5 秒 ｜ 376 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-023 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/MCdn5XKBsEU/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">买轮椅，手动的还是电动的？
+这个没有标准答案，看三样东西。
+头一样，年纪和力气。
+年纪大一些的，选车上操作简单、坐上去就稳当的，比什么都要紧。
+手上有劲的，手动轮椅推着走，反倒更自在。
+第二样，胳膊使不使得上劲。
+手动轮椅靠手掌和手臂发力，长期用，臂力得跟上。
+要是胳膊没劲，硬推久了手腕肩膀都吃不消。
+这种情况，电动的能省不少力。
+多活动活动人也舒坦些，按自己力气和习惯选就好。
+第三样，使用场景。
+屋里头用，两种都合适。
+出门去公园、菜场，电动轮椅劲儿大，速度也能自己调。
+但它重，搬上搬下没那么方便，续航也得留个余量。
+要是经常要出远门、坐高铁，手动轮椅配个车头更合适。
+到了地方拆开车头，折叠起来能带着走。
+这种组合走得远也灵活。
+所以别一上来就问哪个好。
+先想想谁用、在哪儿用、怎么用。
+这三样想清楚，答案自然就出来了。
+你家买的是哪种？评论区说说。
+我是翔哥，关注我，挑车少走弯路。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场坐对镜头，语气像在跟人商量，别像下结论
+2. 讲胳膊发力时用手比画推轮圈的动作
+3. 讲电动省力时指一下车上的控制器
+4. 讲高铁场景时做折叠动作，然后拎一下示意能带走
+5. 结尾看镜头邀请评论区互动，语速放慢
+6. 字幕可标三个判断维度，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">7</div>
+    <div>
+      <div class="ctitle">电动轮椅能上路吗，要不要上牌</div>
+      <div class="cmeta">约 77.6 秒 ｜ 326 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-024 ｜ v1</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/jyAiONaQbYw/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">总有人问我，电动轮椅能不能上路，要不要上牌。
+先说结论：电动轮椅属于医疗器械，不是机动车。
+所以它不存在上牌这回事，也没有牌照这一说。
+那能在哪些地方用？
+小区、公园、商场、医院、屋里头，这些地方都能正常用。
+地铁、电梯、高铁，大部分也都能进。
+坐飞机的话，得提前问航司，按人家的规定来。
+室外呢？
+有人行道就走人行道。
+没有人行道，就借自行车道，尽量靠右。
+两边都没有，就贴着马路最右边慢慢走。
+总的一条，靠右、慢行、别往机动车道中间去。
+还有人问，家里老人没证能不能用。
+我的看法是，按实际需要来，谁需要谁用。
+但具体到每个地方的管理尺度不太一样。
+拿不准的，问一下当地交管部门最稳妥。
+别自己瞎猜，也别信评论区那些吓人的话。
+你家那边管得严不严？评论区说说。
+我是翔哥，关注我，挑车少走弯路。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场坐对镜头，语气像在回答评论区提问
+2. 讲使用场景时镜头切换：小区→公园→商场，或直接在展厅里边说边指
+3. 讲室外靠右行走时用手比画从人行道到自行车道再到马路边
+4. 讲到「问当地交管部门」时语气认真，这是给观众兜底的话
+5. 结尾看镜头邀请评论区互动，语速放慢
+6. 字幕可标三条场景，不写价格、不引法条</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">8</div>
+    <div>
+      <div class="ctitle">老人腿脚弱了，先添这三样</div>
+      <div class="cmeta">约 90.0 秒 ｜ 378 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-025 ｜ v4</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/b-RKM_0BWj0/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">家里长辈腿脚开始不利索了，先别急着添大件。
+先看眼下最要紧解决什么。
+今天说三样。
+头一样，床头放把带扶手的移动坐便椅。
+很多老人出意外，是在夜里起夜去卫生间的路上。
+头一阵晕，腿又没劲。
+坐便椅搁在床边，坐床沿转个身就能用，不用摸黑走远路。
+第二样，床垫底下塞个床边助力扶手。
+免打孔，塞进去就固定住了。
+早上醒来，老人自己拉着栏杆，借手臂的力气就能坐起来。
+家里人也不用弯腰去拽，腰能松口气。
+自己能做的事让他自己做，这点挺要紧。
+第三样，换掉卫生间里那个塑料小板凳。
+地面湿滑，板凳没靠背也没扶手，坐着不踏实。
+专业的洗澡椅带靠背和扶手，底部有吸盘脚垫，坐着稳当。
+椅面带漏水孔，高度能调，洗澡不那么累。
+这三样都不起眼，但都踩在老人日常真用得上的点上。
+好辅具不是比谁贵，是看有没有踩在点上。
+花在刀刃上，家里也省心。
+你家给老人添了什么？评论区说说。
+我是翔哥，关注我，居家养老少踩坑。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场坐对镜头，语气像在跟邻居支招，别像讲课
+2. 讲坐便椅时镜头带到床头位置，用手比画坐床沿转身的动作
+3. 讲床边扶手时做塞床垫的动作，再演示拉栏杆坐起
+4. 讲洗澡椅时指着椅面漏水孔和底部脚垫，给特写
+5. 结尾看镜头邀请评论区互动，语速放慢
+6. 字幕可标三样东西的名字，不写价格、不写医疗术语</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">9</div>
+    <div>
+      <div class="ctitle">爸妈走不远，三款辅具怎么挑</div>
+      <div class="cmeta">约 85.5 秒 ｜ 359 字 ｜ 产品：朋友2/GB-819/P10 ｜ 待审 ｜ 编号 SG-20261020-026 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://www.xiaohongshu.com/discovery/item/69dcbaf000000000210076fb" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：小红书</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">常有家属问我，老人走不远，该配个什么辅具。
+这事儿得看走到哪一步了，我按三种情况说。
+头一种，还能走，就是走不远、站着累。
+选带座的四轮助行器。
+朋友2 就是这一路，铝合金车架，能折起来。
+走累了，座面一放就能坐下歇。
+底下有网布袋，买个菜放个东西都方便。
+双侧线控刹车，下坡捏一下就走得稳。
+第二种，还能走，但晚上出门不踏实。
+选带灯的手杖。
+819 这根，带 LED 照明，还带 FM 收音机。
+还有报警闪光，夜里图个亮眼。
+IP43 防溅水，下点小雨也不怕。
+USB 充电，跟手机一个线。
+第三种，走不太动了，但还想自己出门。
+选碳纤维电动轮椅。
+P10 这台，碳纤维车架，一键就折。
+摇杆操控，不用人推，自己就能走。
+电池能拆下来单独充。
+三句话记牢。
+走得累选助行器，走夜路选手杖，走不动选电动的。
+你家里老人走到哪一步了？评论区说说。
+我是翔哥，关注我，挑车少走弯路。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场坐对镜头，语气像在给家属支招
+2. 每讲一款就把车推到镜头前，指着对应的部件说
+3. 讲朋友2时演示座面放下坐下 + 捏线控刹车
+4. 讲 819 时打开手电和收音机，让观众听见声音
+5. 讲 P10 时做一键折叠动作 + 摇杆操控
+6. 结尾看镜头邀请评论区互动，语速放慢
+7. 字幕可标三款名字，不写价格</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">10</div>
+    <div>
+      <div class="ctitle">老人行动不便，家属要过的几道坎</div>
+      <div class="cmeta">约 84.0 秒 ｜ 353 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-027 ｜ v6</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/QYRO-63QLjE/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">家里老人行动不便，一天大部分时间得躺着，有几件事得提前知道。
+头一件，皮肤。
+长时间躺着，后背屁股脚后跟一直贴着床。
+压得久了，皮肤容易出问题。
+能做的就是六个字，勤翻身，勤擦洗。
+隔上两个钟头翻一回身，左边侧侧，右边侧侧。
+看护时多留意皮肤，发现不对先把那位置悬空，保持干爽。
+第二件，吃喝。
+躺着吃喝没那么顺，一口没咽好就容易呛着。
+所以记一句，能坐着吃就别躺着吃。
+吃完别马上放平，靠着坐一会儿，顺顺气。
+第三件，排便。
+天天不活动，肠胃也懒，好几天解不出来是常事。
+膳食纤维和水都得跟上。
+没事的时候，顺时针在肚子上轻轻揉一揉。
+还有一件，长期不怎么动，力气会变小。
+所以吃的得跟上，粗细搭配好。
+照顾老人是场持久战，拼体力也拼耐心。
+尽心尽力，问心无愧，这就够了。
+你家是怎么安排翻身的？评论区说说。
+我是翔哥，关注我，居家养老少踩坑。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场坐对镜头，语气像在跟家属交底，别吓唬人
+2. 讲皮肤时用手指在后背、屁股、脚后跟几个位置点一下
+3. 讲翻身时做侧卧比画的手势，左右各一下
+4. 讲吃喝时做背后垫高的动作，手势往上抬
+5. 讲揉肚子时在肚子上顺时针画圈
+6. 结尾语速放慢，「尽心尽力问心无愧」说慢一点，这句是情绪点
+7. 字幕可标三件事，不写价格、不写疾病名</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="chead">
+    <div class="no">11</div>
+    <div>
+      <div class="ctitle">床铺不是越软越好</div>
+      <div class="cmeta">约 88.3 秒 ｜ 371 字 ｜ 产品：品类通用（不写具体型号） ｜ 待审 ｜ 编号 SG-20261020-028 ｜ v2</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="col left">
+      <div class="coltag">对标（原片）</div>
+      <h4>视频</h4>
+      <a class="vlink" href="https://v.douyin.com/ME01VqwyrGQ/" target="_blank" rel="noopener">▶ 看原片</a>
+      <h4>基本信息</h4>
+      <div class="kvlist"><div>平台：抖音</div><div>作者：—</div><div>原时长：—</div></div>
+      <h4>结构拆解</h4>
+      <details open>
+        <summary>收起</summary>
+        <div class="detail">（无）</div>
+      </details>
+    </div>
+    <div class="col right">
+      <div class="coltag">改稿（可拍）</div>
+      <h4>逐字稿</h4>
+      <div class="script">很多家属怕老人骨头搁着，给铺厚厚的棉被，一层不够还铺两层。
+觉得越软越舒服，其实不是这么回事。
+老人长时间压着同一个地方，皮肤本来就容易出问题。
+再垫上厚棉被，软是软了，可它吸水又不透气。
+老人躺着容易出汗，棉被很快就潮。
+皮肤一直闷在潮湿里，时间长了反而更脆弱。
+这时候翻个身擦一下，都可能把皮肤弄伤。
+所以第一步不是加厚，是做减法。
+床铺薄一点，透气一点，比多铺一层棉被管用。
+底下垫的东西要能让空气走动，把潮气带走。
+再说隔尿垫。
+不少家属怕漏尿洗床单，在床单底下一次性铺三四个。
+隔尿垫底下那层是防漏的，铺得越多越闷。
+铺三四个，跟在老人后背裹层塑料布差不多。
+正确做法是，买一片大点的、吸得住的，垫在身子底下，一层就够了。
+照顾老人，舒服不是靠堆软乎劲儿。
+是让皮肤能喘上气，干干爽爽的，比什么都强。
+你家床铺铺了几层？评论区说说。
+我是翔哥，关注我，居家养老少踩坑。</div>
+      <h4>拍摄提示</h4>
+      <div class="body">1. 开场坐对镜头，语气像在纠正一个常见误区，别训人
+2. 讲厚棉被时用手比画往上铺的动作，铺两层时手势重复一次
+3. 讲「裹层塑料布」时做个把塑料布蒙在背上的手势，反差要明显
+4. 讲隔尿垫时拿一片做示范，从一片铺到三四片再收回来
+5. 结尾看镜头邀请评论区互动，语速放慢
+6. 字幕可标「一层就够」，不写价格、不写疾病名</div>
+      <h4>合规自检</h4>
+      <div class="body"><span class="badge">通过</span>高危 0 ｜ 中危 0 ｜ 低危 0 → 通过</div>
+    </div>
+  </div>
+</div>
+  <div class="foot">由 tools/build_tencent_table.py 自动生成 ｜ 出新稿后重跑即可刷新</div>
+</div>
+</body>
+</html>
