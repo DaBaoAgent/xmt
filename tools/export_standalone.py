@@ -36,6 +36,32 @@ def load_order():
         return json.load(f)["order"]
 
 
+def collect_archived():
+    """扫描 稿子/{账号}/ 下的子目录（用户归档区，如「1 已用」「1 已售」），
+    返回 {(账号, 标题)} 集合。
+
+    用户的归档习惯（2026-10-23 明确）：用过的稿子自己移进 {账号}/1 已用/，
+    导出工具**不把这些稿子再写回账号根目录**——移出来是他不想要的。
+    子目录里的文件一律只读不动。"""
+    archived = set()
+    for sub in ACCOUNT_DIRS:
+        d = os.path.join(OUT_DIR, sub)
+        if not os.path.isdir(d):
+            continue
+        for name in os.listdir(d):
+            sd = os.path.join(d, name)
+            if not os.path.isdir(sd):
+                continue
+            for f in os.listdir(sd):
+                if not f.endswith(".txt"):
+                    continue
+                title = f[:-4]
+                if "_" in title:                 # 文件名格式 NNN_标题.txt
+                    title = title.split("_", 1)[1]
+                archived.add((sub, title))
+    return archived
+
+
 def main():
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -60,12 +86,18 @@ def main():
             os.makedirs(d, exist_ok=True)
 
     # 编号改为「账号内连续序号」：每个子文件夹从 001 开始，ORDER 定先后
+    archived = collect_archived()
+    if archived:
+        print("归档区（不导出到根目录）：%d 篇" % len(archived))
     seq = {sub: 0 for sub in ACCOUNT_DIRS}
     n = 0
     for code in load_order():
         r = by.get(code)
         if not r:
             print("跳过（库里没有）:", code)
+            continue
+        if (r["account_label"], r["title"]) in archived:
+            print("跳过（已归档到子目录）: %s %s" % (r["account_label"], r["title"]))
             continue
         n += 1
         sub = r["account_label"]          # 口播号 / 品牌号 / 个人号
