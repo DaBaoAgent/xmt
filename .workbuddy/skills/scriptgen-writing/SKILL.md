@@ -273,27 +273,39 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 
 ---
 
-## 铁律八：产出四连刷，序号必须接续
+## 铁律八：一键收尾，序号必须接续
 
-改完稿，产出有**四样**，一个都不能漏：
+改完稿，落库后跑**一条命令**（2026-10-23 起，替代原来的 5 处人工操作）：
 
-| 产物 | 位置 | 生成方式 |
-|---|---|---|
-| 源 md | `out/scripts/<日期>/<账号id>/<CODE>_<标题>.md` | `pipeline._render_script()` |
-| Word | `out/<全局序号>_<账号>_<标题>.docx` | 同上，**但序号要手动接续** |
-| 单独 TXT | `稿子/{账号}/<账号内序号>_<标题>.txt` | `tools/export_standalone.py` |
-| HTML | `对照表/对标对照表-<账号>.html` | `tools/archive_scripts.py` |
+```bash
+.venv/Scripts/python.exe tools/finish_script.py <CODE> [<CODE2> ...]
+```
 
-**⚠️ Word 序号坑**：`store.docx_path()` 用数据库 id 生成序号，新记录 id 比 out/ 里
-已连续编号大（id=81 → `081_xxx.docx`，但已有最大是 078）→ 导出后**必须手动
-重命名接在最大号后面，再把新路径 update 回数据库**。完整命令见
-`docs/对标抓取与脚本生成流程.md` 第 7 步。
+自动完成：渲染 md+Word → Word 序号接在 `out/` 最大号后面并回写数据库 →
+新 code 插进 `config/export_order.json` 同账号组末尾 → 刷 `稿子/` TXT +
+`对照表/` HTML → 质量检查（合规高危/中危、target 人设区间、全账号尾句查重）。
+**幂等**：重复跑不重复接序号、不重复插 ORDER。
 
-**⚠️ 新 code 必须加进 `tools/export_standalone.py` 的 ORDER 列表**，
-按账号插到对应组末尾，否则 TXT 不出、账号内序号断档。
+四个产出一个都不能少：
 
-**⚠️ 标题别带标点**：`slugify` 会把逗号/问号转成连字符，文件名带 `-` 会触发
-本机安全钩子拦 `out/*.docx`（PermissionError）。标题一律用纯汉字+数字。
+| 产物 | 位置 |
+|---|---|
+| 源 md | `out/scripts/<日期>/<账号id>/<CODE>_<标题>.md` |
+| Word | `out/<全局序号>_<账号>_<标题>.docx` |
+| 单独 TXT | `稿子/{账号}/<账号内序号>_<标题>.txt` |
+| HTML | `对照表/对标对照表-<账号>.html` |
+
+另两个模式：`--check` 只跑全库质量检查；`--angles <型号>` 查该型号已写过的
+稿（首句/尾句），**同一型号第 2 篇起必跑，防角度重复**。
+
+仍然有效的旧坑（脚本已自动处理，但要知道原理）：
+- ⚠️ `store.docx_path()` 用数据库 id 生成序号，新记录 id 比 out/ 连续编号大
+  （id=81 → 081，但已有最大是 078）→ 靠收尾脚本 rename 接续 + update 回库
+- ⚠️ ORDER 已数据化到 `config/export_order.json`，不用再手改
+  `export_standalone.py`；漏插的后果是 TXT 不出、账号内序号断档
+- ⚠️ 标题别带标点：`slugify` 会把逗号/问号转成连字符，文件名带 `-` 会触发
+  本机安全钩子拦 `out/*.docx`（PermissionError）。标题一律用纯汉字+数字
+- ⚠️ 归档时 `稿子/` 和 `对照表/` 要一起 `git add`（不在 .gitignore，历来漏提交）
 
 ---
 
@@ -306,6 +318,7 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 ```
 0. 明确四输入：对标短链 + 账号 + 产品 + 数量/风格
    ⚠️ 抖音只要抖音号不够（搜索页验证码+接口签名），必须问用户要主页分享短链
+   ⚠️ 同一型号第 2 篇起，先跑 finish_script.py --angles <型号> 看已用角度
 1. 抓账号：resolve(短链) → sec_uid → probe_douyin_profile / probe_douyin_items
    ⚠️ profile 抓不到作品列表，列表必须用 probe_douyin_items
 2. 抓视频：capture_douyin.py "https://www.douyin.com/video/<id>"（★要完整URL，裸id报MissingSchema）
@@ -316,10 +329,10 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 4. 查产品参数 → docs/产品参数档案.md（铁律七）
 5. 查人设卡 config/personas.json（铁律二）
 6. 写稿：贴对标原句改写（铁律一）+ 合规扫描高危中危必须 0
-7. 落库渲染 + Word 序号手动接续（铁律八）
-8. 刷 TXT + HTML（铁律八）
-9. 质量自查清单（流程文档第 9 步）
-10. 归档：git commit（只 add 本次相关文件，根目录中文大 txt 会被钩子拦）+ 写工作日志
+7. 落库后一键收尾：tools/finish_script.py <CODE>（渲染+接序号+ORDER+刷产出+检查）
+8. 质量自查清单（流程文档第 8 步）
+9. 归档：git commit（只 add 本次相关文件 + 稿子/ + 对照表/，根目录中文大 txt 会被钩子拦）
+   + 写工作日志
 ```
 
 **对标账号登记**：新对标账号除了写分析文档，还要补进 `config/rivals.json`
@@ -330,11 +343,11 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 
 ## 产出清单
 
-改完一条稿，**两条命令刷全部**：
+改完一条稿落库后，**一条命令刷全部**（2026-10-23 起）：
 
 ```bash
-.venv/Scripts/python.exe tools/export_standalone.py   # 一篇一个 txt → 稿子/{账号}/
-.venv/Scripts/python.exe tools/archive_scripts.py     # HTML 对照表 → 对照表/
+.venv/Scripts/python.exe tools/finish_script.py <CODE>
+# 渲染 md/Word + 序号接续 + ORDER 插入 + 稿子/ TXT + 对照表/ HTML + 质量检查
 ```
 
 > 旧的合并版 txt（`口播稿/`）已废弃删除 —— 内容被 `稿子/{账号}/` 完全覆盖。
@@ -349,8 +362,8 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 | `data/scriptgen/batches/*.md` | 批次报告（含计费统计） |
 
 > 用户要求「帮我都单独放在外面吧」→ 单独文件在 `稿子/`，
-> 命名跟 `out/` 的 Word 同序号同标题。刷新命令：
-> `.venv/Scripts/python.exe tools/export_standalone.py`（会先清旧文件，改标题不留残留）
+> 命名跟 `out/` 的 Word 同序号同标题。刷新由收尾脚本自动完成
+> （会先清旧文件，改标题不留残留）。
 
 **改标题后旧 docx 会残留**，记得清理：
 
