@@ -26,6 +26,8 @@
 | `report.py` | 中文 markdown 周报 | `python report.py` |
 | `snapshot.py` | 每日总编排（采集→分析→洞察→销售→看板） | `python snapshot.py` |
 | `scriptgen/` | **拍摄脚本**：对标视频提取→本地知识库→三号逐字稿→审核/同步（不含三平台发布包） | `python -m scriptgen add "<链接>"` |
+| `jiaoben/` | **口播脚本资产库**：24 套 + 4 套 + 36 套分镜脚本、17 个生成器、各产品实拍图与产品资料 | 见 `jiaoben/README.md` |
+| `tools/make_showroom_scripts.py` | **展厅分镜出稿**（无对标模式）：4 分镜×7 秒、一产品 4 套，数据驱动生成 txt/docx | `python tools/make_showroom_scripts.py` |
 | `docs/运营流程.md` | **运营流程（高客单辅具版）**：内容双线、平台分工、转化链路、KPI、合规红线、发布自检 | 文档 |
 | `docs/拍摄脚本模块.md` | 拍摄脚本模块的使用、配置、合规与实测记录 | 文档 |
 
@@ -94,7 +96,7 @@ uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 3. 文本级拆解钩子/节奏/卖点/CTA
 4. 自动判断给口播号/品牌号/个人号里的哪个号；低置信度不硬猜，批次末尾列待确认
 5. 从**阳光展厅可拍清单**里选品（F2Q、HS180P、小福车等；P21/希维尔待确认）
-6. 用 DeepSeek 出**原创口播逐字稿 + 3-5 条拍摄提示**，严格合规扫描
+6. **贴对标原句改写**出逐字稿（骨架照搬、词换近义）+ 3-5 条拍摄提示，严格合规扫描
 7. 人工审核后可同步公司知识库 `marketing`（只同步脚本 + 拆解摘要 + 方法论）
 
 ```bash
@@ -113,6 +115,77 @@ python -m scriptgen personas
 - **不生成三平台标题/标签/封面发布包**。
 - 同一链接成功转写后走缓存；批次预计超过 50 次计费调用时需 `--yes`；兜底下载视频默认用完即删。
 - 合规依据《广告法》第十六条与《医疗器械广告审查办法》的保守口径，只做草稿扫描，不替代法务/广告审查。
+
+## 展厅分镜出稿（无对标模式，2026-10-23 固化）
+
+没有对标视频时的第二条出稿路线，技能沉淀在 `jiaoben/`（2026-10-23 从
+`D:\kaifa\jiaoben` 并入），方法论见 `.workbuddy/skills/scriptgen-writing/展厅分镜脚本技能.md`：
+
+- **结构**：每条 4 分镜 × 7 秒（0-7s 钩子 / 7-14s 卖点一 / 14-21s 卖点二 / 21-28s 情绪收尾），
+  镜1 必须「人 + 动作」入画
+- **配比**：一个产品 4 套，角度不重样（痛点 ×1 + 口碑场景 ×1 + 功能参数 ×1 + 反差/黑科技 ×1），
+  同批 4 套卖点不重复
+- **风格库** 24 种（避坑指南/亲戚口碑/反常识/老板吐槽/场景故事/对比反差/颜值切入/功能拆解/
+  踩坑吐槽/用户视角/对比科普/黑科技/家庭场景/参数拆解/中老年痛点/女生视角/极简/细节控/
+  夏天痛点/安全/王师傅偶遇/方庄店介绍/旅游痛点）
+- **生成器**：`python tools/make_showroom_scripts.py [--spec spec.json] [--name batch01]`，
+  内置风格库校验 + 手动款电动词扫描 + 价格词扫描，不合规不产出
+- **存量资产**：`jiaoben/6款产品_单人口播脚本24套_全新版`（NIP/朋友2/小福车/P10/F2Q/A3）、
+  `jiaoben/小飞燕_单人口播脚本4套`、`jiaoben/博爱方特+新芝车头_单人口播脚本36套`
+- ⚠️ 复用旧合集前先核对 `docs/产品参数档案.md`：P10「10 公斤」是车架重量（整车 15.8KG），
+  A3「10.4 公斤」待核实；博爱方特/新芝是经销品牌，不写佳康顺背书
+
+```bash
+.venv/Scripts/python.exe tools/make_showroom_scripts.py                    # 内置小福车4套示例
+.venv/Scripts/python.exe tools/make_showroom_scripts.py --spec my.json     # 自定义产品+角度
+```
+
+## 对标抓取与写稿（固定 SOP，2026-10-23 固化）
+
+从「用户发一个对标链接」到「产出四件套」的流程已全部固化，**不再临场发挥**。
+完整版见 **[docs/对标抓取与脚本生成流程.md](docs/对标抓取与脚本生成流程.md)**，写稿前同时必读
+**[docs/产品参数档案.md](docs/产品参数档案.md)**；技能侧对应 `.workbuddy/skills/scriptgen-writing/`
+（`SKILL.md` 铁律一到八 + `速查卡.md`）。
+
+| 步 | 动作 | 关键口径 / 坑 |
+|---|---|---|
+| 0 | 明确四输入：对标链接、账号、产品、数量风格 | 抖音必须要**主页分享短链**，只有抖音号拿不到数据 |
+| 1 | 抓账号：短链 → sec_uid → profile → items | **作品列表只能用 items**，profile 抓不到 |
+| 2 | 抓视频 → ffmpeg 转 wav → 本地 Whisper 转写 | URL 要完整（裸 id 报 MissingSchema）；ASR 用 `medium`，`tiny` 会 502 |
+| 3 | 写账号分析（五节：基本面/逐句转写/风格拆解/合规雷区/套用建议） | 转写要**逐句带时间戳**，只给全文没法建骨架 |
+| 4 | 查产品参数（先档案，后知识库） | 检索 2-3 个正式词最稳（全词 AND）；**竞品参数绝不抄** |
+| 5 | 查人设卡 `config/personas.json` | 人设是硬约束，对标角色设定不能照搬 |
+| 6 | 写稿：贴对标原句改写 + 合规扫描 | 骨架照搬、词换近义；高危中危必须为 0 |
+| 7 | 落库 + 渲染 md/Word | **Word 序号手动接在 `out/` 最大号后面**，再回写数据库 |
+| 8 | 刷 TXT + HTML | 新 code 必须进 `tools/export_standalone.py` 的 ORDER 列表 |
+| 9 | 质量自查 | 见流程文档第 9 步清单 |
+| 10 | 归档 | 只 `git add` 本次相关文件（根目录中文大 txt 会被安全钩子拦） |
+
+**写稿硬参数**
+
+| 项 | 口径 |
+|---|---|
+| 长度 | 我方时长 / 对标时长 **0.8-1.3 倍**，一句对一句、不加不减；`target_seconds` 必须落在人设区间 |
+| 人设 | `oral` 60-90s/260-400 字；`brand` 30-45s/150-240 字（**可单人出镜**）；`personal` 45-60s/200-280 字 |
+| 文案 | 骨架照搬、每个词换近义，只做「换词 / 调位 / 替内容」三类改动；禁止照抄原句，也禁止另起炉灶 |
+| 合规 | 不写价格、绝对化、疗效承诺、加微信；手动款禁写电机/电池/摇杆/电磁刹车/续航 |
+| 收尾 | CTA 跟对标走；**批量稿最后一句必须全库不重复** |
+
+**对标账号登记**（`config/rivals.json`，`role` 分两类）
+
+| 类型 | 账号 | 用途 |
+|---|---|---|
+| 同类目对标 | 护卫神官方旗舰店、皮皮熊电动车旗舰店 | 看卖什么、怎么运营 |
+| 风格对标 | **助行辅具王师傅**（priority 1，个人号首选）、陈大脸甄选（priority 2） | 学表达、学骨架，`style_account` 段带 sec_uid / 骨架 / 语音特征 |
+
+**产出四件套**
+
+| 产物 | 位置 |
+|---|---|
+| 单独 TXT | `稿子/{口播号\|品牌号\|个人号}/<账号内序号>_<标题>.txt` |
+| Word | `out/<全局序号>_<账号>_<标题>.docx` |
+| 源 md | `out/scripts/<日期>/<账号id>/<CODE>_<标题>.md` |
+| HTML 对照表 | `对照表/index.html` + `对照表/对标对照表-<账号>.html` |
 
 ## 销售 / 租赁报表模块
 
@@ -145,6 +218,8 @@ python -m scriptgen personas
 
 - `config/accounts.json` —— 自有账号矩阵；抖音填主页分享链接 `url`，小红书填 `xhs_id`。
 - `config/rivals.json` —— 对标账号 + 监控关键词。**日常维护只需编辑根目录 `对标账号.txt`**（一行一个号，写名字 + 主页链接 / 小红书号即可），然后 `python import_rivals.py` 导入；也可用 `python -m analytics.discover --write` 从搜索命中的高表现号里自动补充。
+  - `role` 分两类：`同类目对标`（看卖什么、怎么运营）/ `风格对标`（学表达和骨架，写稿用）。
+  - 风格对标必须补 `style_account` 段：`fit_persona` / `duration` / `skeletons` / `voice` / `signature` / `title_formula` / `priority`，并附 `sec_uid` 与分析文档路径 `analysis_doc`。
 - `config/douyin_cookie.txt`（不入库）—— 抖音**搜索页**需登录态，否则跳验证码中间页。
 - `小红书cookie.txt` / `config/xhs_cookie.txt` —— **已停用**（2026-10-19 平台风控提示），小红书改走 `REDFOX_API_KEY`。
 - `config/llm.local.json`（不入库）—— insight 层 LLM 配置。**零密钥模式（当前默认）**：写 `cloud` 段走 WorkBuddy 云服务 LLM，用户不需要自己的 API key：

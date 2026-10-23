@@ -19,6 +19,15 @@ config/sales_notes.json
 # 采集数据（SQLite，本地生成，不入库）
 data/
 
+# jiaoben 脚本资产库：图片/视频原件约 420MB，只入库文本与生成器
+jiaoben/**/*.jpg
+jiaoben/**/*.jpeg
+jiaoben/**/*.JPG
+jiaoben/**/*.JPEG
+jiaoben/**/*.png
+jiaoben/**/*.PNG
+jiaoben/**/*.mp4
+
 # 凭证 —— 永不入库
 小红书cookie.txt
 小红书cookie.txt.disabled
