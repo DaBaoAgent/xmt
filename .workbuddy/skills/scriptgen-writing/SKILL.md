@@ -5,6 +5,14 @@ description: xmt 项目短视频口播稿写作方法论。当用户给对标视
 
 # 口播稿写作方法论
 
+> **配套文档（都在 `D:\kaifa\xmt`）**
+> - `docs/对标抓取与脚本生成流程.md` —— 从抓对标到产出四件套的 10 步固定 SOP
+> - `docs/产品参数档案.md` —— 所有型号的可写参数 + 禁写边界 + 串参高危点
+> - `config/rivals.json` —— 对标账号登记表（含 sec_uid、骨架类型、优先级）
+> - `config/personas.json` —— 三号人设硬约束
+> - `config/compliance.json` —— 合规规则
+> - 速查卡：本目录 `速查卡.md`
+
 ## 铁律一：贴对标原句改写，不要另起炉灶
 
 用户原话（两次强调）：
@@ -217,6 +225,94 @@ scan = compliance.scan_script(body_text, {"disclaimer": disclaimer}, "", FACT_TE
 
 **必带 `FACT_TEXT`**（数字溯源）：稿里报「19 公斤」时，知识库写的是「19 KG」，
 不传事实片段会被 `numeric_unverified` 误判中危。
+
+---
+
+## 铁律七：产品参数必须先查档案，禁止凭印象和跨型号抄
+
+**唯一参数来源**：`docs/产品参数档案.md`（在 xmt 项目里）。
+
+写任何型号前，先在档案里找到对应条目，取「可写参数」和「禁写边界」。
+档案里没有的型号，先按第 4 步查知识库补齐，**再写稿**。
+
+```bash
+.venv/Scripts/python.exe -c "
+from scriptgen.company_kb import CompanyKB
+kb=CompanyKB()
+for h in kb.search('<型号> <品类>', top_k=8): print(h.get('doc_id'))
+print(kb.read_text('<doc_id>', max_chars=6000))"
+```
+
+**三条高压线**：
+
+1. **参数文档可能只写卖点不写数字** —— NIP 就是（承重/净重/尺寸全标「待补充」），
+   真实数字要去 `marketing/` 和 `common/配文_*` 里找，多源交叉核对。
+   `kb.read` 默认 max_chars 约 5K 会截断，长文档用 `offset=4000` 再读一段。
+2. **竞品参数绝不抄** —— 对标杆子说的「16 公斤 / 12 公里 / 陀螺仪 / 大阻尼康复模式」
+   是**他那台四合一代步车**的，跟我们任何产品都无关。
+3. **手动款不写电动内容** —— NIP / 朋友2 / 减震款 / GB-819 / 小飞燕 全是手动款，
+   稿里不能出现「电机/电池/摇杆/电磁刹车/瓦/AH/锂电/续航/遥控」。
+   刹车要分清：NIP 和朋友2 是**手拉线刹**，只有 F2Q 和 P10 才是电磁刹车。
+
+**踩过的坑**：小飞燕初稿误判成电动车（写了电机、摇杆、钥匙、电磁刹车）；
+朋友2 混过减震款的 8.9KG/8档/7档；P10 和 F2Q 的公里数/瓦数互串过。
+
+**写完自查**：把该产品稿扫一遍禁用词表，见档案第三节的自查命令。
+
+---
+
+## 铁律八：产出四连刷，序号必须接续
+
+改完稿，产出有**四样**，一个都不能漏：
+
+| 产物 | 位置 | 生成方式 |
+|---|---|---|
+| 源 md | `out/scripts/<日期>/<账号id>/<CODE>_<标题>.md` | `pipeline._render_script()` |
+| Word | `out/<全局序号>_<账号>_<标题>.docx` | 同上，**但序号要手动接续** |
+| 单独 TXT | `稿子/{账号}/<账号内序号>_<标题>.txt` | `tools/export_standalone.py` |
+| HTML | `对照表/对标对照表-<账号>.html` | `tools/archive_scripts.py` |
+
+**⚠️ Word 序号坑**：`store.docx_path()` 用数据库 id 生成序号，新记录 id 比 out/ 里
+已连续编号大（id=81 → `081_xxx.docx`，但已有最大是 078）→ 导出后**必须手动
+重命名接在最大号后面，再把新路径 update 回数据库**。完整命令见
+`docs/对标抓取与脚本生成流程.md` 第 7 步。
+
+**⚠️ 新 code 必须加进 `tools/export_standalone.py` 的 ORDER 列表**，
+按账号插到对应组末尾，否则 TXT 不出、账号内序号断档。
+
+**⚠️ 标题别带标点**：`slugify` 会把逗号/问号转成连字符，文件名带 `-` 会触发
+本机安全钩子拦 `out/*.docx`（PermissionError）。标题一律用纯汉字+数字。
+
+---
+
+## 标准流程（固定 SOP）
+
+从「用户给一个对标链接」到「产出四件套」的完整流程已固化为
+**`docs/对标抓取与脚本生成流程.md`**（10 步，含全部命令和坑位）。
+这里是速记版：
+
+```
+0. 明确四输入：对标短链 + 账号 + 产品 + 数量/风格
+   ⚠️ 抖音只要抖音号不够（搜索页验证码+接口签名），必须问用户要主页分享短链
+1. 抓账号：resolve(短链) → sec_uid → probe_douyin_profile / probe_douyin_items
+   ⚠️ profile 抓不到作品列表，列表必须用 probe_douyin_items
+2. 抓视频：capture_douyin.py "https://www.douyin.com/video/<id>"（★要完整URL，裸id报MissingSchema）
+   → ffmpeg 转 wav（先确认有音频，纯字幕视频会报 does not contain any stream）
+   → local_asr2.py <wav> medium
+   ⚠️ 转写脚本写 _转写.txt 会被沙箱拦，但 stdout 全文照样拿得到
+3. 写账号分析 → .workbuddy/skills/scriptgen-writing/对标账号分析-<账号名>.md（五节）
+4. 查产品参数 → docs/产品参数档案.md（铁律七）
+5. 查人设卡 config/personas.json（铁律二）
+6. 写稿：贴对标原句改写（铁律一）+ 合规扫描高危中危必须 0
+7. 落库渲染 + Word 序号手动接续（铁律八）
+8. 刷 TXT + HTML（铁律八）
+9. 质量自查清单（流程文档第 9 步）
+10. 归档：git commit（只 add 本次相关文件，根目录中文大 txt 会被钩子拦）+ 写工作日志
+```
+
+**对标账号登记**：新对标账号除了写分析文档，还要补进 `config/rivals.json`
+的 `rivals` 列表，`role` 填「风格对标」并带 `style_account` 段
+（fit_persona / skeletons / voice / signature / priority）。
 
 ---
 

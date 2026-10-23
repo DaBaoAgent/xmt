@@ -1,5 +1,5 @@
 {
-  "_comment": "对标账号 + 监控关键词。抖音填主页分享链接 url；小红书填 xhs_id（小红书号）。kind=rival，与自有账号同库同表，看板按 kind 分区展示。",
+  "_comment": "对标账号 + 监控关键词。抖音填主页分享链接 url；小红书填 xhs_id（小红书号）。kind=rival，与自有账号同库同表，看板按 kind 分区展示。role 两种：同类目对标（看人家卖什么/怎么运营）／风格对标（学人家的表达和结构，写稿用）。风格对标必须填 style_account 段，写稿前先读这里的骨架。",
   "rivals": [
     {
       "id": "rival_dou_d3546",
@@ -18,6 +18,46 @@
       "role": "同类目对标",
       "note": "由 对标账号.txt 导入",
       "url": "https://v.douyin.com/AmHkW8UqCtc"
+    },
+    {
+      "id": "rival_dou_chen_da_lian",
+      "owner": "个人号",
+      "name": "陈大脸甄选",
+      "platform": "douyin",
+      "role": "风格对标",
+      "url": "https://v.douyin.com/0gaSwZ2JvpE/",
+      "sec_uid": "MS4wLjABAAAAkXeNrjW00-miU-v69O5FmHJI2zcaeZtxNBbrhNEudTo",
+      "analysis_doc": ".workbuddy/skills/scriptgen-writing/对标账号分析-陈大脸甄选.md",
+      "note": "2026-10-21 抓取并分析。店铺号，900关注/279作品，老板本人出镜的「工厂直供+懂行避坑」型。",
+      "style_account": {
+        "fit_persona": ["personal"],
+        "duration": "86-135 秒 / 548-901 字（6.4-7.1 字/秒）",
+        "skeletons": ["完整介绍型", "实测答疑型", "科普介绍型"],
+        "voice": "全程「咱们/您」，口头禅「就是…呢…啊」，演示感强（「给大家看一下」）",
+        "signature": "逐条报数（第一个…第二个…第三个…第四个）+ 每条配「谁在什么状态下用」+ 报具体参数 + 收尾邀请到店",
+        "title_formula": "痛点/场景 + 情绪词 + 产品 + 标签，疑问句多、带 emoji",
+        "priority": 2
+      }
+    },
+    {
+      "id": "rival_dou_wang_shifu",
+      "owner": "个人号",
+      "name": "助行辅具王师傅-大脸老年代步车",
+      "platform": "douyin",
+      "role": "风格对标",
+      "url": "https://v.douyin.com/AE6tbFhlBN4/",
+      "sec_uid": "MS4wLjABAAAAkhVoBkoH9Fp7UpzqsWbOE7HrdQTQa-79nbaFZkPUuh7Se4MHY52jgndZeZxAIT7R",
+      "analysis_doc": ".workbuddy/skills/scriptgen-writing/对标账号分析-王师傅大脸老年代步车.md",
+      "note": "2026-10-21 抓取并分析。跟陈大脸同属一个矩阵（都挂「大脸老年代步车」），但出镜人不同、风格不同。关注40/作品128。",
+      "style_account": {
+        "fit_persona": ["personal"],
+        "duration": "27-40 秒 / 101-219 字（3.7-5.5 字/秒）",
+        "skeletons": ["悬念钩子型", "连缀介绍型", "实测答疑型"],
+        "voice": "偏「咱们」，句子短、逗号连缀，口头禅「呢/啊/吧/咱们/最绝的是/而且」",
+        "signature": "开头抛悬念问句（「谁还没看过…你不会没看过吧？」）→ 逐条说功能 → 报重量续航 → 情绪收尾",
+        "title_formula": "人群/场景 + 悬念或反差 + 产品 + 疑问/否定",
+        "priority": 1
+      }
     }
   ],
   "keywords": {
