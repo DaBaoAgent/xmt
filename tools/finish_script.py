@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-r"""出稿一键收尾：渲染 → Word 序号接续 → ORDER 自动插入 → 刷 TXT/HTML → 质量检查。
+r"""出稿一键收尾：渲染 md → ORDER 自动插入 → 刷 TXT/HTML → 质量检查。
 
 用法：
   # 一键收尾（写稿脚本落库后跑，code 可一次传多个）
-  .venv/Scripts/python.exe tools/finish_script.py SG-20261023-086 [SG-20261023-087 ...]
+  .venv/Scripts/python.exe tools/finish_script.py SG-20261024-086 [SG-20261024-087 ...]
 
   # 只跑全库质量检查（尾句查重 + target 区间校验），不渲染
   .venv/Scripts/python.exe tools/finish_script.py --check
@@ -11,22 +11,24 @@ r"""出稿一键收尾：渲染 → Word 序号接续 → ORDER 自动插入 →
   # 查某个型号已被写过哪些稿、什么角度（出稿前防角度重复）
   .venv/Scripts/python.exe tools/finish_script.py --angles F2Q
 
+  # 清理历史 Word 提词版（项目已停出 Word：output.docx_enabled=false）
+  .venv/Scripts/python.exe tools/finish_script.py --purge-docx
+
 本脚本把原 SOP 第 7-9 步的人工操作全部自动化：
-  1. 渲染 md + Word（pipeline._render_script）
-  2. Word 序号自动接在 out/ 最大号后面，并把新路径 update 回库
-     （store.docx_path 用数据库 id，新记录 id 比已有连续编号大，会跳号）
-  3. 新 code 自动插进 config/export_order.json 的同账号组末尾
+  1. 渲染源 md（pipeline._render_script；Word 已停用）
+  2. 新 code 自动插进 config/export_order.json 的同账号组末尾
      （不再需要手改 export_standalone.py 的 ORDER——已数据化）
-  4. subprocess 刷 稿子/ 单篇 TXT 与 对照表/ HTML
-  5. 质量检查：合规高危/中危必须 0；target_seconds 落在人设区间；
+  3. subprocess 刷 稿子/ 单篇 TXT 与 对照表/ HTML
+  4. 质量检查：合规高危/中危必须 0；target_seconds 落在人设区间；
      全账号尾句去重（重复只警告，不阻断——历史遗留稿由用户定夺）
-幂等：重复跑同一个 code 不会重复接序号、不会重复插 ORDER。
+幂等：重复跑同一个 code 不会重复插 ORDER。
+
+产出三件套（2026-10-24 起不再出 Word）：
+  源 md  |  稿子/{账号}/NNN_标题.txt  |  对照表/对标对照表-{账号}.html
 """
-import glob
 import io
 import json
 import os
-import re
 import sqlite3
 import subprocess
 import sys
@@ -43,7 +45,6 @@ DB = os.path.join(ROOT, "data", "xmt.db")
 OUT_DIR = os.path.join(ROOT, "out")
 ORDER_FILE = os.path.join(ROOT, "config", "export_order.json")
 PERSONAS_FILE = os.path.join(ROOT, "config", "personas.json")
-SEQ_PAT = re.compile(r"^(\d{3})_.*\.docx$")
 
 
 def load_order():
@@ -54,34 +55,6 @@ def load_order():
 def save_order(order):
     with io.open(ORDER_FILE, "w", encoding="utf-8") as f:
         json.dump({"order": order}, f, ensure_ascii=False, indent=1)
-
-
-def fix_docx_seq(con, code):
-    """把 Word 文件名序号接到 out/ 最大号后面，回写数据库。幂等。"""
-    s = store.get_script(con, code)
-    cur = s.get("docx_path")
-    if not cur or not os.path.exists(cur):
-        return None
-    cur_abs = os.path.abspath(cur)
-    mx = 0
-    for p in glob.glob(os.path.join(OUT_DIR, "*.docx")):
-        m = SEQ_PAT.match(os.path.basename(p))
-        if m and os.path.abspath(p) != cur_abs:
-            mx = max(mx, int(m.group(1)))
-    base = os.path.basename(cur)                 # 087_个人号_标题.docx
-    rest = base.split("_", 1)[1]                 # 个人号_标题.docx
-    want = os.path.join(OUT_DIR, "%03d_%s" % (mx + 1, rest))
-    if os.path.abspath(want) == cur_abs:
-        return want                               # 已经接好（重跑场景）
-    if os.path.exists(want):
-        print("  [序号] 目标已存在且不是本次渲染产物，跳过改名：%s" % os.path.basename(want))
-        return cur
-    os.rename(cur, want)
-    rel = os.path.relpath(want, ROOT).replace("\\", "/")
-    store.update_script(con, code, docx_path=rel)
-    con.commit()
-    print("  [序号] %s → %s（已回写数据库）" % (base, os.path.basename(want)))
-    return want
 
 
 def insert_order(codes):
@@ -183,6 +156,50 @@ def check_angles(model):
             print("    尾句：%s" % lines[-1][:50])
 
 
+def purge_docx(codes=None, limit=30):
+    """清理 Word 提词版。
+
+    2026-10-24 起项目不再出 Word（config/scriptgen.json 的 output.docx_enabled=false），
+    产出三件套：源 md + 稿子/ 单篇 txt + 对照表/ HTML。
+    这里把已生成的 docx 文件删掉，并把库里的 docx_path 字段清空。
+
+    注意：本机安全钩子限制单次删除数量（bulk 阈值 50），所以默认一次最多删 30 个，
+    剩下的重复跑本命令即可清空（脚本会报剩余数）。"""
+    import glob as _glob
+    con = sqlite3.connect(DB)
+    files = []
+    if codes:
+        for code in codes:
+            s = store.get_script(con, code)
+            p = s.get("docx_path") if s else None
+            if p:
+                files.append(os.path.join(ROOT, p) if not os.path.isabs(p) else p)
+    else:
+        files = _glob.glob(os.path.join(OUT_DIR, "*.docx"))
+    removed = 0
+    failed = []
+    for p in files:
+        if removed >= limit:
+            break
+        if os.path.exists(p):
+            try:
+                os.remove(p)
+                removed += 1
+            except Exception as e:
+                # 本机删除走回收站，个别文件可能失败（如被占用/钩子拒绝），跳过继续
+                failed.append(os.path.basename(p))
+                print("  [跳过] %s：%s" % (os.path.basename(p), str(e)[:60]))
+    con.execute("UPDATE sg_scripts SET docx_path=NULL")
+    con.commit()
+    con.close()
+    left = len(_glob.glob(os.path.join(OUT_DIR, "*.docx")))
+    print("  [清理] 本次删除 %d 个 Word，库内 docx_path 已清空；out/ 还剩 %d 个"
+          % (removed, left))
+    if left:
+        print("  （安全钩子限制单次删除数量，再跑一次本命令继续清理）")
+    return removed
+
+
 def main():
     args = sys.argv[1:]
     if not args:
@@ -194,6 +211,9 @@ def main():
     if args[0] == "--angles":
         check_angles(args[1] if len(args) > 1 else "")
         return
+    if args[0] == "--purge-docx":
+        purge_docx()
+        return
 
     codes = args
     con = sqlite3.connect(DB)
@@ -204,28 +224,23 @@ def main():
         con.close()
         return
 
-    # 1. 渲染 md + Word
-    print("== 1. 渲染 ==")
+    # 1. 渲染 md（Word 已停用：output.docx_enabled=false）
+    print("== 1. 渲染（只出 md）==")
     for code in codes:
         s = store.get_script(con, code)
         store.update_script(con, code, file_path=store.script_path(s))
         con.commit()
         pipeline._render_script(con, code)
         print("  [渲染] %s %s" % (code, s.get("title")))
-
-    # 2. Word 序号接续 + 回写
-    print("== 2. Word 序号接续 ==")
-    for code in codes:
-        fix_docx_seq(con, code)
     con.close()
 
-    # 3. ORDER 自动插入
-    print("== 3. ORDER 插入 ==")
+    # 2. ORDER 自动插入
+    print("== 2. ORDER 插入 ==")
     if not insert_order(codes):
         print("  （ORDER 里都已有，跳过）")
 
     # 4. 刷 TXT + HTML
-    print("== 4. 刷产出 ==")
+    print("== 3. 刷产出 ==")
     for tool in ("export_standalone.py", "archive_scripts.py"):
         p = subprocess.run(
             [sys.executable, os.path.join(HERE, tool)],
@@ -234,7 +249,7 @@ def main():
         print("  [%s] %s" % (tool, " / ".join(t.strip() for t in tail if t.strip())))
 
     # 5. 质量检查
-    print("== 5. 质量检查 ==")
+    print("== 4. 质量检查 ==")
     hard = quality_check(codes)
     if hard:
         print("\n★ 有硬问题（合规高危/中危），修完再归档")

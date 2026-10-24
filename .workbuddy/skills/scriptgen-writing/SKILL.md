@@ -6,7 +6,7 @@ description: xmt 项目短视频口播稿写作方法论。当用户给对标视
 # 口播稿写作方法论
 
 > **配套文档（都在 `D:\kaifa\xmt`）**
-> - `docs/对标抓取与脚本生成流程.md` —— 从抓对标到产出四件套的 10 步固定 SOP
+> - `docs/对标抓取与脚本生成流程.md` —— 从抓对标到产出三件套的 10 步固定 SOP
 > - `docs/产品参数档案.md` —— 所有型号的可写参数 + 禁写边界 + 串参高危点
 > - `config/rivals.json` —— 对标账号登记表（含 sec_uid、骨架类型、优先级）
 > - `config/personas.json` —— 三号人设硬约束
@@ -281,17 +281,15 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 .venv/Scripts/python.exe tools/finish_script.py <CODE> [<CODE2> ...]
 ```
 
-自动完成：渲染 md+Word → Word 序号接在 `out/` 最大号后面并回写数据库 →
-新 code 插进 `config/export_order.json` 同账号组末尾 → 刷 `稿子/` TXT +
-`对照表/` HTML → 质量检查（合规高危/中危、target 人设区间、全账号尾句查重）。
-**幂等**：重复跑不重复接序号、不重复插 ORDER。
+自动完成：渲染源 md → 新 code 插进 `config/export_order.json` 同账号组末尾 →
+刷 `稿子/` TXT + `对照表/` HTML → 质量检查（合规高危/中危、target 人设区间、
+全账号尾句查重）。**幂等**：重复跑不重复插 ORDER。
 
-四个产出一个都不能少：
+三个产出一个都不能少（**Word 提词版已于 2026-10-24 停用**）：
 
 | 产物 | 位置 |
 |---|---|
 | 源 md | `out/scripts/<日期>/<账号id>/<CODE>_<标题>.md` |
-| Word | `out/<全局序号>_<账号>_<标题>.docx` |
 | 单独 TXT | `稿子/{账号}/<账号内序号>_<标题>.txt` |
 | HTML | `对照表/对标对照表-<账号>.html` |
 
@@ -299,19 +297,19 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 稿（首句/尾句），**同一型号第 2 篇起必跑，防角度重复**。
 
 仍然有效的旧坑（脚本已自动处理，但要知道原理）：
-- ⚠️ `store.docx_path()` 用数据库 id 生成序号，新记录 id 比 out/ 连续编号大
-  （id=81 → 081，但已有最大是 078）→ 靠收尾脚本 rename 接续 + update 回库
 - ⚠️ ORDER 已数据化到 `config/export_order.json`，不用再手改
   `export_standalone.py`；漏插的后果是 TXT 不出、账号内序号断档
 - ⚠️ 标题别带标点：`slugify` 会把逗号/问号转成连字符，文件名带 `-` 会触发
-  本机安全钩子拦 `out/*.docx`（PermissionError）。标题一律用纯汉字+数字
+  本机安全钩子拦（PermissionError），md 文件名同样受影响。标题一律用纯汉字+数字
 - ⚠️ 归档时 `稿子/` 和 `对照表/` 要一起 `git add`（不在 .gitignore，历来漏提交）
+- ⚠️ Word 已停出（`config/scriptgen.json` → `output.docx_enabled=false`）
+  存量清理：`tools/finish_script.py --purge-docx`（安全钩子限单次 ≤50，分批跑）
 
 ---
 
 ## 标准流程（固定 SOP）
 
-从「用户给一个对标链接」到「产出四件套」的完整流程已固化为
+从「用户给一个对标链接」到「产出三件套」的完整流程已固化为
 **`docs/对标抓取与脚本生成流程.md`**（10 步，含全部命令和坑位）。
 这里是速记版：
 
@@ -347,7 +345,7 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 
 ```bash
 .venv/Scripts/python.exe tools/finish_script.py <CODE>
-# 渲染 md/Word + 序号接续 + ORDER 插入 + 稿子/ TXT + 对照表/ HTML + 质量检查
+# 渲染源 md + ORDER 插入 + 稿子/ TXT + 对照表/ HTML + 质量检查
 ```
 
 > 旧的合并版 txt（`口播稿/`）已废弃删除 —— 内容被 `稿子/{账号}/` 完全覆盖。
@@ -357,19 +355,12 @@ print(kb.read_text('<doc_id>', max_chars=6000))"
 | 文件 | 用途 |
 |---|---|
 | `稿子/{账号}/00N_{标题}.txt` | **一篇一个单独 txt**，按账号分三个子目录 |
-| `out/00N_{账号}_{标题}.docx` | 提词打印版，给出镜的人念 |
 | `out/对标对照表/对标对照表-{号}.html` | 左右对照：左对标（可点开原片+结构拆解），右改稿 |
 | `data/scriptgen/batches/*.md` | 批次报告（含计费统计） |
 
 > 用户要求「帮我都单独放在外面吧」→ 单独文件在 `稿子/`，
-> 命名跟 `out/` 的 Word 同序号同标题。刷新由收尾脚本自动完成
+> 文件名 = 账号内连续序号 + 标题。刷新由收尾脚本自动完成
 > （会先清旧文件，改标题不留残留）。
-
-**改标题后旧 docx 会残留**，记得清理：
-
-```bash
-ls out/*.docx | grep -v "<新标题1>\|<新标题2>" | xargs -r rm -f
-```
 
 **改名脚本注意**：`os.rename` 用相对路径会 FileNotFoundError；rename 成功但后续步骤失败
 会导致源文件已删、目标未生成 → 丢文件。用绝对路径 + 失败可回滚。

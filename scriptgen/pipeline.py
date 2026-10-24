@@ -270,7 +270,12 @@ def _save_script(con, ref, transcript, b, acc_sel, prod, out):
     _render_script(con, code)
     store.rebuild_index(con)
     saved = store.get_script(con, code)
-    return code, path, (saved.get("docx_path") if saved else None)
+    # 2026-10-24 起默认不再出 Word（开关 config/scriptgen.json → output.docx_enabled），
+    # 这里只在开关打开时才回传 docx_path，避免把已停用的旧路径继续往外传。
+    docx = None
+    if (util.config().get("output") or {}).get("docx_enabled", False):
+        docx = saved.get("docx_path") if saved else None
+    return code, path, docx
 
 
 def _render_script(con, code):
@@ -287,6 +292,10 @@ def _render_script(con, code):
         store.update_script(con, code, file_path=path)
         con.commit()
     # 打印版 Word：只含标题、账号/出镜、逐字稿或对白稿
+    # 2026-10-24 起默认不再出 Word（用户只要 md + 单篇 txt + HTML 对照表），
+    # 开关在 config/scriptgen.json 的 output.docx_enabled，需要时改回 true 即可恢复。
+    if not (util.config().get("output") or {}).get("docx_enabled", False):
+        return path
     docx = script.get("docx_path") or store.docx_path(script)
     try:
         from . import docx_export

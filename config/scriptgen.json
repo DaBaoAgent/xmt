@@ -7,6 +7,10 @@
     "batch_dir": "data/scriptgen/batches",
     "tmp_dir": "data/tmp"
   },
+  "output": {
+    "_comment": "产出开关。docx_enabled=false 时不再生成 Word 提词版（2026-10-24 起只要 md + 单篇 txt + HTML 对照表）",
+    "docx_enabled": false
+  },
   "redfox": {
     "poll_interval_sec": 3,
     "transcript_timeout_sec": 180,

@@ -95,16 +95,22 @@
 SKILL.md 里铁律七=参数必查档案，铁律八=一键收尾 `tools/finish_script.py`。
 
 **★ 一键收尾（2026-10-23 起，出稿最后一步只跑这一条）**：
-`.venv/Scripts/python.exe tools/finish_script.py <CODE>` —— 自动渲染 md/Word、
-Word 序号接 `out/` 最大号并回写库、ORDER 插 `config/export_order.json` 同账号组末、
+`.venv/Scripts/python.exe tools/finish_script.py <CODE>` —— 自动渲染 md、
+ORDER 插 `config/export_order.json` 同账号组末、
 刷 `稿子/` TXT + `对照表/` HTML、质量检查（合规/人设区间/全账号尾句查重）。幂等可重跑。
 另：`--check` 只跑检查；`--angles <型号>` 查该型号已用角度（同型号第 2 篇起必跑）。
 尾句查重口径：口播号「关注翔哥」/品牌号「只有试试才知道」是固定 CTA 不算撞车，
 个人号非 CTA 句式重复才算。
 **归档必须 `git add 稿子 对照表`**（不在 .gitignore 但历来漏提交，2026-10-23 已补全量）。
 
+**★ Word 已停出（2026-10-24 用户明确「不要Word文档了」）**：
+产出三件套 = 源 md + 单篇 txt + HTML 对照表。开关 `config/scriptgen.json` →
+`output.docx_enabled=false`（改回 true 恢复）；存量清理 `finish_script.py --purge-docx`
+（单次 ≤30 分批，钩子限 50/turn）。剩 9 个带连字符文件名的 docx 钩子保护删不掉、
+库 docx_path 已清空，属无害残留。展厅分镜生成器 make_showroom_scripts.py 仍产 docx，未停。
+
 **对外入口**：`README.md` 的「对标抓取与写稿（固定 SOP，2026-10-23 固化）」节
-（10 步 + 写稿硬参数 + 对标账号两类 + 产出四件套），是项目外部读者看的同一套口径，
+（10 步 + 写稿硬参数 + 对标账号两类 + 产出三件套），是项目外部读者看的同一套口径，
 改流程时三处（docs / 技能 / README）必须同步改。
 
 ## ★ 第二条出稿路线：展厅分镜（无对标，2026-10-23 固化）
