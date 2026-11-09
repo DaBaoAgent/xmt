@@ -132,7 +132,8 @@ def main():
         path = os.path.join(OUT_DIR, sub, name)
         with io.open(path, "w", encoding="utf-8") as f:
             f.write("%s\n" % r["title"])
-            f.write("%s ｜ %d 字 / %.1f 秒\n" % (
+            f.write("产品：%s ｜ %s ｜ %d 字 / %.1f 秒\n" % (
+                r["product_model"] or "品类通用（不写具体型号）",
                 r["account_label"], r["word_count"], r["estimated_seconds"]))
             f.write("=" * 46 + "\n\n")
             f.write(r["body_md"])

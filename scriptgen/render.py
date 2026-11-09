@@ -245,20 +245,40 @@ def render_script(script):
 
     lines.append("## 二、口播逐字稿")
     lines.append("")
-    timeline, fmt, total = _timeline_lines(s.get("body"))
-    if fmt == "dialogue":
-        for start, end, line in timeline:
-            sp = line.get("speaker") or "—"
-            beat = line.get("beat") or ""
-            beat_txt = f"［{beat}］" if beat else ""
-            lines.append(f"**{sp}（{_fmt_time(start)}–{_fmt_time(end)}）**：{beat_txt}{line.get('text') or ''}")
+    _body = s.get("body") if isinstance(s.get("body"), dict) else {}
+    variants = _body.get("variants") or []
+    total = None
+    if variants:
+        lines.append("【两版并列·任选一版拍摄】")
+        lines.append("")
+        for vi, v in enumerate(variants):
+            vlines = v.get("lines") or []
+            vwc = sum(len(x.get("text") or "") for x in vlines)
+            label = "一二三"[vi] if vi < 3 else str(vi + 1)
+            lines.append(f"### 稿{label}｜{v.get('label') or ''}（{vwc} 字 / 约 {vwc / 4.2:.1f} 秒）")
             lines.append("")
+            vt, _vfmt, _vtot = _timeline_lines({"lines": vlines, "format": "dialogue"})
+            for start, end, line in vt:
+                sp = line.get("speaker") or "—"
+                beat = line.get("beat") or ""
+                beat_txt = f"［{beat}］" if beat else ""
+                lines.append(f"**{sp}（{_fmt_time(start)}–{_fmt_time(end)}）**：{beat_txt}{line.get('text') or ''}")
+                lines.append("")
     else:
-        for start, end, line in timeline:
-            beat = line.get("beat") or ""
-            beat_txt = f"［{beat}］" if beat else ""
-            lines.append(f"**【{_fmt_time(start)}–{_fmt_time(end)}】** {beat_txt}{line.get('text') or ''}")
-            lines.append("")
+        timeline, fmt, total = _timeline_lines(s.get("body"))
+        if fmt == "dialogue":
+            for start, end, line in timeline:
+                sp = line.get("speaker") or "—"
+                beat = line.get("beat") or ""
+                beat_txt = f"［{beat}］" if beat else ""
+                lines.append(f"**{sp}（{_fmt_time(start)}–{_fmt_time(end)}）**：{beat_txt}{line.get('text') or ''}")
+                lines.append("")
+        else:
+            for start, end, line in timeline:
+                beat = line.get("beat") or ""
+                beat_txt = f"［{beat}］" if beat else ""
+                lines.append(f"**【{_fmt_time(start)}–{_fmt_time(end)}】** {beat_txt}{line.get('text') or ''}")
+                lines.append("")
     if total:
         lines.append(f"> 预计口播时长：约 {total:.1f} 秒（按 {4.2} 字/秒估算；实际以试读为准）")
         lines.append("")

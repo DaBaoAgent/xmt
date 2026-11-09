@@ -46,6 +46,9 @@ OUT_DIR = os.path.join(ROOT, "out")
 ORDER_FILE = os.path.join(ROOT, "config", "export_order.json")
 PERSONAS_FILE = os.path.join(ROOT, "config", "personas.json")
 
+# 口播号（翔哥号）统一固定尾句——用户 2026-10-27 指令
+FIXED_TAIL = "关注翔哥，了解更多辅具知识。"
+
 
 def load_order():
     with io.open(ORDER_FILE, encoding="utf-8") as f:
@@ -115,6 +118,8 @@ def quality_check(codes):
                   % (code, tgt, r["account_label"], lo, hi_s))
 
     # 2. 全账号尾句查重（跳过已归档：用户用过并移进 1 已用 的稿不再占位置）
+    #    口播号尾句自 2026-10-27 起统一固定为 FIXED_TAIL（用户指令），
+    #    故取固定尾句之前的那一句参与查重，防止正文收尾金句隐性撞车。
     lasts = {}
     for r in con.execute(
             "SELECT code, title, account_label, body_md FROM sg_scripts "
@@ -122,7 +127,10 @@ def quality_check(codes):
         lines = [x for x in (r["body_md"] or "").split("\n") if x.strip()]
         if not lines:
             continue
-        lasts.setdefault((r["account_label"], lines[-1]), []).append(r["title"])
+        last = lines[-1].strip()
+        if last.rstrip("。.！!") == FIXED_TAIL.rstrip("。.！!") and len(lines) > 1:
+            last = lines[-2].strip()
+        lasts.setdefault((r["account_label"], last), []).append(r["title"])
     dups = {k: v for k, v in lasts.items() if len(v) > 1}
     if dups:
         print("  [尾句] 发现 %d 组重复（规则：批量稿最后一句必须不同）：" % len(dups))
