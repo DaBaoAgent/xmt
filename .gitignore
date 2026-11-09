@@ -3,23 +3,23 @@
 __pycache__/
 *.py[cod]
 
-# 运�?�产�?
+# 运行产物
 logs/
 out/
 *.log
 
-# 对标原�?�文�?/�?写（�?�?三方内�?�，仅本地使�?�?
+# 对标原始文案/转写（含第三方内容，仅本地使用）
 knowledge/
 
-# 客户业务数据（不入公�?仓库�?
-�?�?报表/
+# 客户业务数据（不入公开仓库）
+销售报表/
 *.xlsx
 config/sales_notes.json
 
 # 采集数据（SQLite，本地生成，不入库）
 data/
 
-# jiaoben 脚本资产库：图片/视�?�原件约 420MB，只入库文本与生成器
+# jiaoben 脚本资产库：图片/视频原件约 420MB，只入库文本与生成器
 jiaoben/**/*.jpg
 jiaoben/**/*.jpeg
 jiaoben/**/*.JPG
@@ -28,9 +28,9 @@ jiaoben/**/*.png
 jiaoben/**/*.PNG
 jiaoben/**/*.mp4
 
-# �?�? —�?? 永不入库
-小红�?cookie.txt
-小红�?cookie.txt.disabled
+# 凭证 —— 永不入库
+小红书cookie.txt
+小红书cookie.txt.disabled
 config/xhs_cookie.txt
 config/llm.local.json
 config/*.local.json
@@ -42,8 +42,8 @@ config/*.local.json
 Thumbs.db
 desktop.ini
 
-# ��ʱ�ű�Ŀ¼�����ز������⣩
+# 临时脚本目录（本地产物，不入库）
 temp/
 
-# ��Ŀ¼���ݿ⸱�����������ɣ�
+# 根目录数据库副本（本地生成）
 /xmt.db
